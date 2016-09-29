@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "fw_wrapper")
+set(fw_wrapper_MAINTAINER "Tai Won Chung <taichung2014@u.northwestern.edu>")
+set(fw_wrapper_DEPRECATED "")
+set(fw_wrapper_VERSION "0.0.0")
+set(fw_wrapper_BUILD_DEPENDS "roscpp" "rospy" "std_msgs" "message_generation")
+set(fw_wrapper_RUN_DEPENDS "roscpp" "rospy" "std_msgs" "message_runtime")
+set(fw_wrapper_BUILDTOOL_DEPENDS "catkin")

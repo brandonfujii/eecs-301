@@ -1,0 +1,8 @@
+prefix=/home/rosuser/ros_workspace/devel
+
+Name: fw_wrapper
+Description: Description of fw_wrapper
+Version: 0.0.0
+Cflags: -I/home/rosuser/ros_workspace/devel/include
+Libs: -L/home/rosuser/ros_workspace/devel/lib 
+Requires: 

@@ -1,0 +1,8 @@
+prefix=/home/rosuser/ros_workspace/devel
+
+Name: eecs301_grp_c
+Description: Description of eecs301_grp_c
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/rosuser/ros_workspace/devel/lib 
+Requires: 
