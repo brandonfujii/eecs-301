@@ -40,6 +40,91 @@ INNER_OFFSET = 200
 OUTER_OFFSET = 75
 PORT_MAP = { 'back_right_shoulder': 4, 'back_right_elbow': 8, 'back_left_shoulder': 3, 'back_left_elbow' : 7, 'front_right_shoulder': 2, 'front_right_elbow': 6, 'front_left_shoulder': 1, 'front_left_elbow': 5 }
 
+class Leg:
+	def __init__(self, elbow_port, shoulder_port, up, forward, max_forward, max_back, max_up, max_down):
+		self.elbow = elbow_port
+		self.shoulder = shoulder_port
+		self.up = up
+		self.forward = forward
+		self.max_forward = max_forward
+		self.max_back = max_back
+		self.max_up = max_up
+		self.max_down = max_down
+
+	getPosition(self, part):
+		if part == 'elbow':
+			return getMotorPositionCommand(self.elbow)
+		elif part == 'shoulder':
+			return getMotorPositionCommand(self.shoulder)
+		else:
+			rospy.loginfo('Please pass in an elbow or a shoulder')
+
+	setPosition(self, part, target_val, offset = 0):
+		if part == 'elbow':
+			if self.up == 'plus':
+				setMotorTargetPositionCommand(self.elbow, target_val + offset)
+			else:
+				setMotorTargetPositionCommand(self.elbow, target_val - offset)
+		elif part == 'shoulder':
+			if self.forward == 'plus':
+				setMotorTargetPositionCommand(self.shoulder, target_val + offset)
+			else:
+				setMotorTargetPositionCommand(self.shoulder, target_val - offset)
+		else:
+			rospy.loginfo('Please pass in an elbow or a shoulder')
+
+	moveLeg(self):
+		shoulder_pos = self.getPosition('shoulder')
+
+		if abs(self.max_back - shoulder_pos) <= 5:
+			self.setPosition('elbow', self.max_down, 50)
+			self.setPosition('shoulder', self.max_forward)
+		elif abs(self.max_forward - shoulder_pos) <= 300:
+			self.setPosition('elbow', self.max_down)
+			if abs(self.max_forward - shoulder_pos) <= 5:
+				self.setPosition('shoulder', self.max_backward)
+
+
+
+
+class Robot:
+	def __init__(self):
+		self.ir_port = 2,
+		self.head_port = 1,
+		self.backRightLeg = Leg(8, 4, 'plus', 'plus', 544, 205, 814, 210)
+		self.backLeftLeg = Leg(7, 3, 'minus', 'minus', 480, 819, 210, 814)
+		self.frontRightLeg = Leg(6, 2, 'minus', 'plus', 819, 480, 210, 814)
+		self.frontLeftLeg = Leg(5, 1, 'plus', 'minus', 205, 544, 814, 210)
+
+	def getLegPositions(self):
+		leg_positions = {}
+	    leg_positions['back_right_shoulder'] = getMotorPositionCommand(self.backRightLeg.shoulder)
+	    leg_positions['back_right_elbow'] = getMotorPositionCommand(self.backRightLeg.elbow)
+	    leg_positions['back_left_shoulder'] = getMotorPositionCommand(self.backLeftLeg.shoulder)
+	    leg_positions['back_right_elbow'] = getMotorPositionCommand(self.backLeftLeg.elbow)
+	    leg_positions['front_right_shoulder'] = getMotorPositionCommand(self.frontRightLeg.shoulder)
+	    leg_positions['front_right_elbow'] = getMotorPositionCommand(self.frontRightLeg.elbow)
+	    leg_positions['front_left_shoulder'] = getMotorPositionCommand(self.frontLeftLeg.shoulder)
+	    leg_positions['front_left_elbow'] = getMotorPositionCommand(self.frontLeftLeg.elbow)
+	    return leg_positions
+
+	def walking_position(self):
+		self.backRightLeg.setPosition('elbow', self.backRightLeg.max_down)
+		self.backRightLeg.setPosition('shoulder', self.backRightLeg.max_forward)
+		self.backLeftLeg.setPosition('elbow', self.backLeftLeg.max_down)
+		self.backLeftLeg.setPosition('shoulder', self.backLeftLeg.max_forward)
+		self.frontRightLeg.setPosition('elbow', self.frontRightLeg.max_down)
+		self.frontRightLeg.setPosition('shoulder', self.frontRightLeg.max_back)
+		self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.max_down)
+		self.frontLeftLeg.setPosition('shoulder', self.frontLeftLeg.max_forward)
+
+	def walk(self):
+		self.backRightLeg.moveLeg()
+		self.backLeftLeg.moveLeg()
+		self.frontRightLeg.moveLeg()
+		self.frontLeftLeg.moveLeg()
+
+
 # wrapper function to call service to set a motor mode
 # 0 = set target positions, 1 = set wheel moving
 def setMotorMode(motor_id, target_val):
