@@ -2,6 +2,7 @@
 import roslib
 import rospy
 from fw_wrapper.srv import *
+import operator
 
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
@@ -61,15 +62,9 @@ class Leg:
 
 	setPosition(self, part, target_val, offset = 0):
 		if part == 'elbow':
-			if self.up == 'plus':
-				setMotorTargetPositionCommand(self.elbow, target_val + offset)
-			else:
-				setMotorTargetPositionCommand(self.elbow, target_val - offset)
+            setMotorTargetPositionCommand(self.elbow, self.up(target_val, offset));
 		elif part == 'shoulder':
-			if self.forward == 'plus':
-				setMotorTargetPositionCommand(self.shoulder, target_val + offset)
-			else:
-				setMotorTargetPositionCommand(self.shoulder, target_val - offset)
+            setMotorTargetPositionCommand(self.elbow, self.forward(target_val, offset))
 		else:
 			rospy.loginfo('Please pass in an elbow or a shoulder')
 
@@ -91,10 +86,10 @@ class Robot:
 	def __init__(self):
 		self.ir_port = 2,
 		self.head_port = 1,
-		self.backRightLeg = Leg(8, 4, 'plus', 'plus', 544, 205, 814, 210)
-		self.backLeftLeg = Leg(7, 3, 'minus', 'minus', 480, 819, 210, 814)
-		self.frontRightLeg = Leg(6, 2, 'minus', 'plus', 819, 480, 210, 814)
-		self.frontLeftLeg = Leg(5, 1, 'plus', 'minus', 205, 544, 814, 210)
+		self.backRightLeg = Leg(8, 4, operator.add, operator.add, 544, 205, 814, 210)
+		self.backLeftLeg = Leg(7, 3, operator.sub, operator.sub, 480, 819, 210, 814)
+		self.frontRightLeg = Leg(6, 2, operator.sub, operator.add, 819, 480, 210, 814)
+		self.frontLeftLeg = Leg(5, 1, operator.add, operator.sub, 205, 544, 814, 210)
 
 	def getLegPositions(self):
 		leg_positions = {}
