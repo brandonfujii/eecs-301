@@ -166,8 +166,11 @@ class Robot:
 		self.frontRightLeg = Leg(6, 2, operator.sub, operator.add, 819, 480, 210, 814)
 		self.frontLeftLeg = Leg(5, 1, operator.add, operator.sub, 205, 544, 814, 210)
 		self.head_threshold = 1100
-		self.left_threshold = 110
-		self.right_threshold = 70
+		self.left_threshold = 200
+		self.right_threshold = 100
+		self.left_wall_threshold = 480
+		self.right_wall_threshold = 340
+		self.action = None
 		self.states = [
 		    { 
 		      'back_right_shoulder' : self.backRightLeg.max_forward,
@@ -352,14 +355,21 @@ class Robot:
 	        if getSensorValue(self.left_ir_port) >= self.left_threshold and getSensorValue(self.right_ir_port) >= self.right_threshold:
 	            self.turnAround()
 	        elif getSensorValue(self.right_ir_port) >= self.right_threshold:
-	            self.turnLeft_90()
+	            if getSensorValue(self.left_ir_port) < self.left_threshold:
+	                self.turnLeft_90()
+	            else:
+	                self.turnAround()
 	        elif getSensorValue(self.left_ir_port) >= self.left_threshold:
-	            self.turnRight_90()
+	            if getSensorValue(self.right_ir_port) < self.right_threshold:
+	                self.turnRight_90()
+	            else:
+	                self.turnAround()
 	    else:
 	        self.stepLeft()
 	        self.stepRight()             
 	             
 	def stepLeft(self):
+	    self.action = 'step_left'
 	    self.frontRightLeg.setPosition('elbow', self.frontRightLeg.up(self.frontRightLeg.max_down, 50))
 	    self.frontRightLeg.setPosition('shoulder', self.frontRightLeg.forward(self.frontRightLeg.max_back, 170))
 	    wait(0.1)
@@ -379,6 +389,7 @@ class Robot:
 	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.max_down)
 	    
 	def stepRight(self):
+	    self.action = 'step_right'
 	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.up(self.frontLeftLeg.max_down, 50))
 	    self.frontLeftLeg.setPosition('shoulder', self.frontLeftLeg.forward(self.frontLeftLeg.max_forward, -170))
 	    wait(0.1)
@@ -411,6 +422,7 @@ class Robot:
 	def turnRight_90(self):
 	    self.neutral_position()
 	    wait(0.5)
+	    number_of_turns = 3
 	    for x in range(0, 3):
 	        self.turnRight()
 	        
@@ -500,12 +512,41 @@ class Robot:
 		
 		return turningRightState
 	
-	def followWall(self, wall):
+	def followWall(self, wall, number_of_steps):
 	    if wall == 'right':
-	        if getSensorValue(self.right_ir_port) >= self.right_threshold:
-	           self.stepLeft()
+	        right_sensor_value = getSensorValue(self.right_ir_port)
+	        rospy.loginfo(number_of_steps)
+	        if number_of_steps >= 6:
+	            self.turnLeft()
+	            return 0
+	        elif number_of_steps <= -6:
+	            self.turnRight()
+	            return 0
 	        else:
-	           self.stepRight()
+	            if right_sensor_value >= self.right_wall_threshold:
+	               self.stepLeft()
+	               return number_of_steps + 1
+	            else:
+	               self.stepRight()
+	               return number_of_steps - 1
+	    else: 
+	        left_sensor_value = getSensorValue(self.left_ir_port)
+	        rospy.loginfo(number_of_steps)
+	        if number_of_steps >= 10:
+	            self.turnLeft()
+	            return 0
+	        elif number_of_steps <= -7:
+	            self.turnLeft()
+	            return 0
+	        else:
+	            if left_sensor_value >= self.left_wall_threshold:
+	                rospy.loginfo("Right")
+	                self.stepRight()
+	                return number_of_steps + 1
+	            else:
+	                rospy.loginfo("left")
+	                self.stepLeft()
+	                return number_of_steps - 1
 
 
 def wait(seconds):
@@ -526,7 +567,9 @@ if __name__ == "__main__":
     Ross = Robot()
     # Ross.walking_position_left()
     turningRightState = 0
+    number_of_steps = 0
     Ross.neutral_position()
+    wait(5)
     
     args = sys.argv[1:]
     if not args or len(args) < 1:
@@ -546,7 +589,8 @@ if __name__ == "__main__":
     elif mode == 'feedback':
         rospy.loginfo("Feedback wall mode")
         while not rospy.is_shutdown():
-            Ross.followWall(wall)
+            # rospy.loginfo(getSensorValue(Ross.right_ir_port))
+            number_of_steps = Ross.followWall(wall, number_of_steps)
             r.sleep()
         
         
