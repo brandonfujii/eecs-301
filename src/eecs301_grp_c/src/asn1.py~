@@ -519,7 +519,7 @@ class Robot:
 	        if number_of_steps >= 6:
 	            self.turnLeft()
 	            return 0
-	        elif number_of_steps <= -8:
+	        elif number_of_steps <= -6:
 	            self.turnRight()
 	            return 0
 	        else:
@@ -569,7 +569,8 @@ if __name__ == "__main__":
     turningRightState = 0
     number_of_steps = 0
     Ross.neutral_position()
-    wait(5)
+    wait(7)
+    # Ross.turnAround()
     
     args = sys.argv[1:]
     if not args or len(args) < 1:

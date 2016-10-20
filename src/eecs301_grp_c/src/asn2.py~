@@ -4,6 +4,7 @@ import rospy
 import sys
 from fw_wrapper.srv import *
 import operator
+from map import *
 
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
@@ -366,7 +367,8 @@ class Robot:
 	                self.turnAround()
 	    else:
 	        self.stepLeft()
-	        self.stepRight()             
+	        self.stepRight()
+	        rospy.loginfo("walked")             
 	             
 	def stepLeft(self):
 	    self.action = 'step_left'
@@ -408,6 +410,37 @@ class Robot:
 	    self.backLeftLeg.setPosition('elbow', self.backLeftLeg.max_down)
 	    self.frontRightLeg.setPosition('elbow', self.frontRightLeg.max_down)
 	    
+	def stepRight_2(self):
+
+	    self.action = 'step_right'
+	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.up(self.frontLeftLeg.max_down, 50))
+	    self.frontLeftLeg.setPosition('shoulder', self.frontLeftLeg.forward(self.frontLeftLeg.max_forward, -170))
+	    wait(0.1)
+	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.max_down)
+	    wait(0.1)
+	    self.backRightLeg.setPosition('elbow', self.backRightLeg.up(self.backRightLeg.max_down, 50))
+	    self.backRightLeg.setPosition('shoulder', self.backRightLeg.max_forward)
+	    wait(0.1)
+	    self.backRightLeg.setPosition('elbow', self.backRightLeg.max_down)
+	    wait(0.25)
+	    
+	    self.backLeftLeg.setPosition('elbow', self.backLeftLeg.up(self.backLeftLeg.max_down, 75))
+	    self.frontRightLeg.setPosition('elbow', self.frontRightLeg.up(self.frontRightLeg.max_down, 75))
+	    
+	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.up(self.frontLeftLeg.max_down, 100))
+	    self.backRightLeg.setPosition('elbow', self.backRightLeg.up(self.backRightLeg.max_down, 100))
+	    
+	    #self.backLeftLeg.setPosition('elbow', self.backLeftLeg.up(self.backLeftLeg.max_down, 25))
+	    #self.frontRightLeg.setPosition('elbow', self.frontRightLeg.up(self.frontRightLeg.max_down, 25))
+	    self.backRightLeg.setPosition('shoulder', self.backRightLeg.forward(self.backRightLeg.max_back, 170))
+	    self.frontLeftLeg.setPosition('shoulder', self.frontLeftLeg.max_back)
+	    wait(0.25)
+	    self.backLeftLeg.setPosition('elbow', self.backLeftLeg.max_down)
+	    self.frontRightLeg.setPosition('elbow', self.frontRightLeg.max_down)
+	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.max_down)
+	    self.backRightLeg.setPosition('elbow', self.backRightLeg.max_down)
+	    wait(.25)
+	    
 	def in_turning_right_position(self, step_num):
 		TOL = 100
 		check_positions = self.turningRightSteps[step_num]
@@ -423,33 +456,34 @@ class Robot:
 	    self.neutral_position()
 	    wait(0.5)
 	    number_of_turns = 3
-	    for x in range(0, 3):
+	    for x in xrange(0, 3):
 	        self.turnRight()
 	        
-	def turnRight(self):
+	def turnRight(self, offset=0):
 	    self.frontRightLeg.setPosition('elbow', self.frontRightLeg.up(self.frontRightLeg.max_down, 50))
-	    self.frontRightLeg.setPosition('shoulder', self.frontRightLeg.max_back)
+	    self.frontRightLeg.setPosition('shoulder', self.frontRightLeg.forward(self.frontRightLeg.max_back, offset))
 	    wait(0.1)
 	    self.frontRightLeg.setPosition('elbow', self.frontRightLeg.max_down)
 	    self.backRightLeg.setPosition('elbow', self.backRightLeg.up(self.backRightLeg.max_down, 50))
-	    self.backRightLeg.setPosition('shoulder', self.backRightLeg.max_back)
+	    self.backRightLeg.setPosition('shoulder', self.backRightLeg.forward(self.backRightLeg.max_back, offset))
 	    wait(0.1)
 	    self.backRightLeg.setPosition('elbow', self.backRightLeg.max_down)
 	    self.backLeftLeg.setPosition('elbow', self.backLeftLeg.up(self.backLeftLeg.max_down, 50))
-	    self.backLeftLeg.setPosition('shoulder', self.backLeftLeg.max_forward)
+	    self.backLeftLeg.setPosition('shoulder', self.backLeftLeg.forward(self.backLeftLeg.max_forward, -offset))
 	    wait(0.1)
 	    self.backLeftLeg.setPosition('elbow', self.backLeftLeg.max_down)
 	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.up(self.frontLeftLeg.max_down, 50))
-	    self.frontLeftLeg.setPosition('shoulder', self.frontLeftLeg.max_forward)
+	    self.frontLeftLeg.setPosition('shoulder', self.frontLeftLeg.forward(self.frontLeftLeg.max_forward, -offset))
 	    wait(0.1)
 	    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.max_down)
 	    self.neutral_position()
 	    wait(0.25)
+	    
 	        
 	def turnLeft_90(self):
 	    self.neutral_position_left()
 	    wait(0.5)
-	    for x in range(0, 5):
+	    for x in xrange(0, 7):
 	        self.turnLeft()
 	        
 	def turnLeft(self):
@@ -473,44 +507,36 @@ class Robot:
 	    wait(0.25)
 	        
 	def turnAround(self):
-	    for x in range(0, 7):
+	    for x in xrange(0, 7):
 	        self.turnRight()
+	        
+	def north(self):
+	    for i in xrange(0, 3):
+	        self.walk2()
+	        
+	def straight(self, number_of_moves):
+	    num_steps = 0
+	    if number_of_moves % 2 == 0:
+	        num_steps = 5*(number_of_moves / 2)
+	    else:
+	        num_steps = 3 + 5 * ((number_of_moves - 1) / 2)
+	    print num_steps
+	    for i in xrange(0, num_steps):
+	        self.walk2()
+	    
 	
-
-	def turnRight2(self, turningRightState):
-		# update state
-
-		# execute step
-		if turningRightState == 0:
-			self.neutral_position()
-		elif turningRightState == 1:
-			self.frontRightLeg.setPosition('elbow', self.frontRightLeg.up(self.frontRightLeg.max_down, 50))
-			self.frontRightLeg.setPosition('shoulder', self.frontRightLeg.max_back)
-		elif turningRightState == 2:
-			self.frontRightLeg.setPosition('elbow', self.frontRightLeg.max_down)
-		elif turningRightState == 3:
-			self.backRightLeg.setPosition('elbow', self.backRightLeg.up(self.backRightLeg.max_down, 50))
-			self.backRightLeg.setPosition('shoulder', self.backRightLeg.max_back)
-		elif turningRightState == 4:
-			self.backRightLeg.setPosition('elbow', self.backRightLeg.max_down)
-		elif turningRightState == 5:
-			self.backLeftLeg.setPosition('elbow', self.backLeftLeg.up(self.backLeftLeg.max_down, 50))
-			self.backLeftLeg.setPosition('shoulder', self.backLeftLeg.max_forward)
-		elif turningRightState == 6:
-		    self.backLeftLeg.setPosition('elbow', self.backLeftLeg.max_down)
-		elif turningRightState == 7:
-		    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.up(self.frontLeftLeg.max_down, 50))
-		    self.frontLeftLeg.setPosition('shoulder', self.frontLeftLeg.max_forward)
-		elif turningRightState == 8:
-		    self.frontLeftLeg.setPosition('elbow', self.frontLeftLeg.max_down)
-		elif turningRightState == 9:
-		    self.neutral_position()
-		    
-		if turningRightState <= 8:
-			if self.in_turning_right_position(turningRightState):
-				turningRightState += 1
-		
-		return turningRightState
+	def move_east(self, number_of_moves):
+	    self.turnRight_90()
+	    for i in xrange(0, number_of_moves):
+	        self.north()
+	    #self.straight(number_of_moves)
+	    self.neutral_position()
+	    self.turnRight(100)
+	    
+	def west(self):
+	    self.turnLeft_90()
+	    for i in xrange(0, 3):
+	        self.walk2()
 	
 	def followWall(self, wall, number_of_steps):
 	    if wall == 'right':
@@ -561,7 +587,7 @@ if __name__ == "__main__":
 
     # control loop running at 10hz
     r = rospy.Rate(10) # 10hz
-    for x in range(1, 9):
+    for x in xrange(1, 9):
        setMotorTargetSpeed(x, 500)
         
     Ross = Robot()
@@ -569,9 +595,9 @@ if __name__ == "__main__":
     turningRightState = 0
     number_of_steps = 0
     Ross.neutral_position()
-    wait(8)
-    # Ross.turnAround()
+    wait(5)
     
+    """
     args = sys.argv[1:]
     if not args or len(args) < 1:
         rospy.loginfo('Usage: rosrun eecs301_grp_c asn1.py <mode> <optional argument>')
@@ -581,7 +607,7 @@ if __name__ == "__main__":
     wall = None
     if len(args) > 1:
         wall = args[1]
-    
+
     if mode == 'obstacle':
         rospy.loginfo("Obstacle mode")
         while not rospy.is_shutdown():
@@ -593,5 +619,12 @@ if __name__ == "__main__":
             # rospy.loginfo(getSensorValue(Ross.right_ir_port))
             number_of_steps = Ross.followWall(wall, number_of_steps)
             r.sleep()
-        
+    """ 
+    while not rospy.is_shutdown():
+        Ross.move_east(3)
+        # Ross.neutral_position()
+        wait(5)
+    your_map = EECSMap()
+    your_map.printCostMap()
+    your_map.printObstacleMap()
         
