@@ -124,7 +124,7 @@ def getIsMotorMovingCommand(motor_id):
         return resp1.val
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
-        
+
 class Leg:
 	def __init__(self, wheel_port, shoulder_port, forward, max_forward, max_back):
 		self.wheel = wheel_port
@@ -158,7 +158,7 @@ class Leg:
 				setMotorWheelSpeed(self.wheel, 1023 + speed)
 		else:
 			rospy.loginfo("Direction must be clockwise, counter-clockwise, foward, or backward")
-		
+
 class Robot:
 	def __init__(self):
 		self.left_ir_port = 3
@@ -174,19 +174,19 @@ class Robot:
 		self.left_wall_threshold = 480
 		self.right_wall_threshold = 340
 		self.action = None
-	
+
 	def driving_position(self):
 	    self.backRightLeg.setShoulderPosition(512)
 	    self.frontLeftLeg.setShoulderPosition(512)
 	    self.backLeftLeg.setShoulderPosition(512)
 	    self.frontRightLeg.setShoulderPosition(512)
 
-	def setAllWheels(self, direction, speed)
+	def setAllWheels(self, direction, speed):
 		self.backLeftLeg.setWheelSpeed(direction, speed)
 		self.frontLeftLeg.setWheelSpeed(direction, speed)
 		self.backRightLeg.setWheelSpeed(direction, speed)
 		self.frontRightLeg.setWheelSpeed(direction, speed)
-	
+
 	def drive(self):
 	    self.setAllWheels('forward', 500)
 
@@ -195,12 +195,12 @@ class Robot:
 	    self.frontLeftLeg.setShoulderPosition(self.frontLeftLeg.forward(self.frontLeftLeg.max_forward, -200))
 	    self.backLeftLeg.setShoulderPosition(self.backLeftLeg.forward(self.backLeftLeg.max_back, 200))
 	    self.frontRightLeg.setShoulderPosition(self.frontRightLeg.forward(self.frontRightLeg.max_forward, -200))
-	
+
 	def turnWheelRight(self):
 	    self.setAllWheels('counter-clockwise', 700)
 
 	def turnWheelLeft(self):
-		self.setAllWheels('clockwise', 700)   
+		self.setAllWheels('clockwise', 700)
 
 	def walk2(self):
 	    if getSensorValue(self.head_port) >= self.head_threshold:
@@ -219,40 +219,40 @@ class Robot:
 	    else:
 	        self.stepLeft()
 	        self.stepRight()
-	        rospy.loginfo("walked")             
-	             
+	        rospy.loginfo("walked")
+
 	def stepLeft(self):
 	    self.action = 'step_left'
-	    
-	    
+
+
 	def stepRight(self):
 	    self.action = 'step_right'
 
-	    
-	
+
+
 	def turnRight_90(self):
 		return True
-	        
+
 	def turnRight(self, offset=0):
 	    return True
-	        
+
 	def turnLeft_90(self):
 	     return True
 
 	def turnLeft(self):
 		return True
-	        
+
 	def turnAround(self):
 		return True
 
 	def north(self):
 	    for i in xrange(0, 3):
 	        self.walk2()
-	        
+
 	def straight(self, number_of_moves):
 		return True
-	    
-	
+
+
 	def move_east(self, number_of_moves):
 	    self.turnRight_90()
 	    for i in xrange(0, number_of_moves):
@@ -260,12 +260,12 @@ class Robot:
 	    #self.straight(number_of_moves)
 	    self.neutral_position()
 	    self.turnRight(100)
-	    
+
 	def west(self):
 	    self.turnLeft_90()
 	    for i in xrange(0, 3):
 	        self.walk2()
-	
+
 	def followWall(self, wall, number_of_steps):
 	    if wall == 'right':
 	        right_sensor_value = getSensorValue(self.right_ir_port)
@@ -283,7 +283,7 @@ class Robot:
 	            else:
 	               self.stepRight()
 	               return number_of_steps - 1
-	    else: 
+	    else:
 	        left_sensor_value = getSensorValue(self.left_ir_port)
 	        rospy.loginfo(number_of_steps)
 	        if number_of_steps >= 10:
@@ -307,13 +307,13 @@ def wait(seconds):
     initial = rospy.Time.now()
     while rospy.Time.now() < initial + rospy.Duration(seconds):
         continue
-        
+
 def shutdown(sig, stackframe):
     rospy.loginfo("Setting wheels to zero")
     for wheel in [16, 11, 12, 9]:
         setMotorWheelSpeed(wheel, 0)
     sys.exit(0)
-    
+
 # Main function
 if __name__ == "__main__":
     rospy.init_node('example_node', anonymous=True)
@@ -325,20 +325,20 @@ if __name__ == "__main__":
     r = rospy.Rate(10) # 10hz
     for x in xrange(1, 9):
        setMotorTargetSpeed(x, 500)
-        
+
     for wheel in [11, 9, 16, 12]:
         setMotorMode(wheel, 1)
-    
+
     Ross = Robot()
     # Ross.walking_position_left()
     # Ross.turning_position()
-    
+
     """
     args = sys.argv[1:]
     if not args or len(args) < 1:
         rospy.loginfo('Usage: rosrun eecs301_grp_c asn1.py <mode> <optional argument>')
         sys.exit(1)
-        
+
     mode = args[0]
     wall = None
     if len(args) > 1:
@@ -355,7 +355,7 @@ if __name__ == "__main__":
             # rospy.loginfo(getSensorValue(Ross.right_ir_port))
             number_of_steps = Ross.followWall(wall, number_of_steps)
             r.sleep()
-    """ 
+    """
     prevPosition = None
     rotations = 0
     while not rospy.is_shutdown():
@@ -375,4 +375,4 @@ if __name__ == "__main__":
     your_map = EECSMap()
     your_map.printCostMap()
     your_map.printObstacleMap()
-        
+    print your_map
