@@ -132,9 +132,7 @@ def getPath(start, start_heading, end, end_heading):
     elif (current_heading-end_heading)==2 or (current_heading-end_heading)==-2:
         steps.append("Turn around")
 
-
     print steps
+    return steps
 
 getPath([7, 6], 2, [0, 6], 1)
-#DIRECTION = enum(North=1, East=2, South=3, West=4)
-#directions north [1,0] east [0,-1] south [-1,0] west [0,1]
