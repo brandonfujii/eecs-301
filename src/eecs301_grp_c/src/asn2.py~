@@ -240,7 +240,7 @@ class Robot:
 		self.turnWheelRight()
 		wait(1.75)
 		self.stop()
-		wait(.5)
+		wait(.1)
 
 
 	def turnLeft_90(self):
@@ -249,7 +249,7 @@ class Robot:
 	    self.turnWheelLeft()
 	    wait(1.75)
 	    self.stop()
-	    wait(.5)
+	    wait(.1)
 
 	def turnAround(self):
 		self.turning_position()
@@ -257,7 +257,7 @@ class Robot:
 		self.turnWheelRight()
 		wait(3.5)
 		self.stop()
-		wait(.5)
+		wait(.1)
 		
 
 	def north(self):
@@ -278,7 +278,7 @@ class Robot:
 	    self.drive()
 	    wait(3.5*num_squares)
 	    self.stop()
-	    wait(3)
+	    wait(.1)
 	    
 	def follow_instructions(self, instr_array):
 	    for instr in instr_array:

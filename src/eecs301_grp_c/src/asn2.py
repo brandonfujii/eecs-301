@@ -255,7 +255,7 @@ class Robot:
 		self.turning_position()
 		wait(2)
 		self.turnWheelRight()
-		wait(3.5)
+		wait(3.25)
 		self.stop()
 		wait(.1)
 		
