@@ -125,13 +125,13 @@ def getPath(start, start_heading, end, end_heading):
         elif current_heading < 1:
             current_heading = current_heading + 4
 
-    if (current_heading-end_heading)==1 or (current_heading-end_heading)==-3:
-        steps.append("Turn left")
-    elif (current_heading-end_heading)==-1 or (current_heading-end_heading)==3:
-        steps.append("Turn right")
-    elif (current_heading-end_heading)==2 or (current_heading-end_heading)==-2:
-        steps.append("Turn around")
-
+    # if (current_heading-end_heading)==1 or (current_heading-end_heading)==-3:
+    #     steps.append("Turn left")
+    # elif (current_heading-end_heading)==-1 or (current_heading-end_heading)==3:
+    #     steps.append("Turn right")
+    # elif (current_heading-end_heading)==2 or (current_heading-end_heading)==-2:
+    #     steps.append("Turn around")
+        
     print steps
     return steps
 
