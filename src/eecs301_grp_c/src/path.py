@@ -37,20 +37,10 @@ def getPath(start, start_heading, end, end_heading):
             next_position = [current_position[0], current_position[1]-1]
             mapQueue.put(next_position)
             visited.append(next_position)
-<<<<<<< HEAD
             my_map.costMap[current_position[0]][current_position[1] - 1] = current_cost + 1
-            
-def main():
-    my_map = EECSMap()
-    single_path(my_map, [0, 0], 0, [7, 7], 3)
-=======
-            my_map.costMap[current_position[0]][current_position[1]-1] = current_cost+1
 
-    my_map.printCostMap()
-    my_map.printObstacleMap()
->>>>>>> ee03388f975499d7e7e2a8baedcf56d00ef148d3
-
-
+    print my_map.printObstacleMap()
+    print my_map.printCostMap()
     current_position = end
     last_position = end
     current_heading = start_heading
@@ -100,6 +90,7 @@ def main():
             last_position = current_position
 
     print "Path from %s at %s to %s at %s" % (start, DIRECTIONS[start_heading - 1], end, DIRECTIONS[end_heading - 1])
+    print positions
     steps = []
     for i in range(0,len(directions)):
         if ((directions[-i-1] == [-1,0] and current_heading == 3) or
@@ -112,19 +103,22 @@ def main():
             (directions[-i-1] == [0,-1] and current_heading == 3) or
             (directions[-i-1] == [1, 0] and current_heading == 2) or
             (directions[-i-1] == [0, 1] and current_heading == 1) ):
-            steps.append("Go Left")
+            steps.append("Turn Left")
+            steps.append("Go Forward")
             current_heading = (current_heading + 3) % 4
         elif ((directions[-i-1] == [-1,0] and current_heading == 1) or
             (directions[-i-1] == [0,-1] and current_heading == 4) or
             (directions[-i-1] == [1, 0] and current_heading == 3) or
             (directions[-i-1] == [0, 1] and current_heading == 2) ):
-            steps.append("Go Backward")
+            steps.append("Turn Around")
+            steps.append("Go Forward")
             current_heading = (current_heading + 2) % 4 # reverse heading
         elif ((directions[-i-1] == [-1,0] and current_heading == 2) or
               (directions[-i-1] == [0,-1] and current_heading == 1) or
               (directions[-i-1] == [1, 0] and current_heading == 4) or
               (directions[-i-1] == [0, 1] and current_heading == 3) ):
-            steps.append("Go Right")
+            steps.append("Turn Right")
+            steps.append("Go Forward")
             current_heading = (current_heading + 1)%4
 
         # Correct heading
@@ -133,14 +127,12 @@ def main():
         elif current_heading < 1:
             current_heading = current_heading + 4
 
-    # if (current_heading-end_heading)==1 or (current_heading-end_heading)==-3:
-    #     steps.append("Turn left")
-    # elif (current_heading-end_heading)==-1 or (current_heading-end_heading)==3:
-    #     steps.append("Turn right")
-    # elif (current_heading-end_heading)==2 or (current_heading-end_heading)==-2:
-    #     steps.append("Turn around")
+    if (current_heading-end_heading)==1 or (current_heading-end_heading)==-3:
+         steps.append("Turn Left")
+    elif (current_heading-end_heading)==-1 or (current_heading-end_heading)==3:
+         steps.append("Turn Right")
+    elif (current_heading-end_heading)==2 or (current_heading-end_heading)==-2:
+         steps.append("Turn Around")
         
     print steps
     return steps
-
-getPath([7, 6], 2, [0, 6], 1)

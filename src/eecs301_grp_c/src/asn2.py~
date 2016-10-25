@@ -6,6 +6,7 @@ import sys
 from fw_wrapper.srv import *
 import operator
 from map import *
+from path import *
 
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
@@ -235,7 +236,7 @@ class Robot:
 
 	def turnRight_90(self):
 		self.turning_position()
-		wait(1)
+		wait(2)
 		self.turnWheelRight()
 		wait(1.75)
 		self.stop()
@@ -244,7 +245,7 @@ class Robot:
 
 	def turnLeft_90(self):
 	    self.turning_position()
-	    wait(1)
+	    wait(2)
 	    self.turnWheelLeft()
 	    wait(1.75)
 	    self.stop()
@@ -252,7 +253,7 @@ class Robot:
 
 	def turnAround(self):
 		self.turning_position()
-		wait(1)
+		wait(2)
 		self.turnWheelRight()
 		wait(3.5)
 		self.stop()
@@ -264,22 +265,31 @@ class Robot:
 	    
 	def east(self):
 	    self.turnRight_90()
-	    self.straight(1)
 	
 	def west(self):
 	    self.turnLeft_90()
-	    self.straight(1)
 	    
 	def south(self):
 	    self.turnAround()
-	    self.straight(1)
 	    
 	def straight(self, num_squares):
 	    self.driving_position()
+	    wait(2)
 	    self.drive()
 	    wait(3.5*num_squares)
 	    self.stop()
 	    wait(3)
+	    
+	def follow_instructions(self, instr_array):
+	    for instr in instr_array:
+	        if instr == 'Go Forward':   
+	            self.north()
+	        elif instr == 'Turn Left':
+	            self.west()
+	        elif instr == 'Turn Right':
+	            self.east()
+	        elif instr == 'Turn Around':
+	            self.south()
 
 
 """
@@ -394,9 +404,10 @@ if __name__ == "__main__":
 
     # control loop running at 10hz
     r = rospy.Rate(10) # 10hz
-    for x in xrange(1, 9):
-       setMotorTargetSpeed(x, 500)
+    #for x in xrange(1, 9):
+    #   setMotorTargetSpeed(x, 500)
 
+    setMotorSpeeds(50)
     for wheel in [11, 9, 16, 12]:
         setMotorMode(wheel, 1)
 
@@ -404,56 +415,26 @@ if __name__ == "__main__":
     # Ross.walking_position_left()
     # Ross.turning_position()
 
-    """
     args = sys.argv[1:]
-    if not args or len(args) < 1:
-        rospy.loginfo('Usage: rosrun eecs301_grp_c asn1.py <mode> <optional argument>')
+    if not args or len(args) < 6:
+        rospy.loginfo("Usage: rosrun eecs301_grp_c asn2.py start_x start_y start_heading end_x end_y end_heading")
         sys.exit(1)
+    print args
+    start = [int(args[0]), int(args[1])]
+    start_heading = int(args[2])
+    end = [int(args[3]), int(args[4])]
+    end_heading = int(args[5])
+    # end_heading = int(args[3])
+    # print start, start_heading
 
-    mode = args[0]
-    wall = None
-    if len(args) > 1:
-        wall = args[1]
-
-    if mode == 'obstacle':
-        rospy.loginfo("Obstacle mode")
-        while not rospy.is_shutdown():
-            Ross.walk2()
-            r.sleep()
-    elif mode == 'feedback':
-        rospy.loginfo("Feedback wall mode")
-        while not rospy.is_shutdown():
-            # rospy.loginfo(getSensorValue(Ross.right_ir_port))
-            number_of_steps = Ross.followWall(wall, number_of_steps)
-            r.sleep()
-    """
     prevPosition = getMotorPositionCommand(11)
     wheelState = [prevPosition, 0]
     Ross.driving_position()
     wait(1)
-    while not rospy.is_shutdown():
+    # while not rospy.is_shutdown():
        #wheelState = Ross.straight(1, wheelState)
-       Ross.east()
-    """
-        while rotations < 6:
-            val = getMotorPositionCommand(16)
-            rospy.loginfo(val)
-            rospy.loginfo("prev val")
-            rospy.loginfo(prevPosition)
-            if prevPosition:
-                if val < prevPosition:
-                    rospy.loginfo("rotation")
-                    rotations = rotations + 1
-                    rospy.loginfo(rotations)
-            prevPosition = val
-            Ross.driving_position()
-            Ross.drive()
-        rospy.loginfo("stopping")
-        Ross.stop()
-        
-    """
+    # print start, end
+        # Ross.drive()
+    Ross.follow_instructions(getPath(start, start_heading, end, end_heading))
+
     # Ross.neutral_position()
-    your_map = EECSMap()
-    your_map.printCostMap()
-    your_map.printObstacleMap()
-    print your_maprosco
