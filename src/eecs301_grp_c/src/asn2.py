@@ -136,26 +136,26 @@ class Leg:
 	def getShoulderPosition(self, part):
 		return getMotorPositionCommand(self.shoulder)
 
-	def setShoulderPosition(self, part, target_val, offset = 0):
+	def setShoulderPosition(self, target_val, offset = 0):
 		setMotorTargetPositionCommand(self.shoulder, self.forward(target_val, offset))
 
 	def setWheelSpeed(self, direction, speed):
-		if speed > 1023 or speed < 0:
-			rospy.loginfo("Speed must be between 0 and 1023")
+		if speed > 1024 or speed < 0:
+			rospy.loginfo("Speed must be between 0 and 1024")
 		elif direction == 'clockwise':
-			setMotorWheelSpeed(self.wheel, 1023 + speed)
+			setMotorWheelSpeed(self.wheel, 1024 + speed)
 		elif direction == 'counter-clockwise':
 			setMotorWheelSpeed(self.wheel, speed)
 		elif direction == 'forward':
 			if self.wheel == PORT_MAP['back_right_wheel'] or self.wheel == PORT_MAP['front_right_wheel']:
-				setMotorWheelSpeed(self.wheel, 1023 + speed)
+				setMotorWheelSpeed(self.wheel, 1024 + speed)
 			else:
 				setMotorWheelSpeed(self.wheel, speed)
 		elif direction == 'backward':
 			if self.wheel == PORT_MAP['back_right_wheel'] or self.wheel == PORT_MAP['front_right_wheel']:
 				setMotorWheelSpeed(self.wheel, speed)
 			else:
-				setMotorWheelSpeed(self.wheel, 1023 + speed)
+				setMotorWheelSpeed(self.wheel, 1024 + speed)
 		else:
 			rospy.loginfo("Direction must be clockwise, counter-clockwise, foward, or backward")
 
@@ -189,6 +189,9 @@ class Robot:
 
 	def drive(self):
 	    self.setAllWheels('forward', 500)
+	    
+	def stop(self):
+	    self.setAllWheels('forward', 0)
 
 	def turning_position(self):
 	    self.backRightLeg.setShoulderPosition(self.backRightLeg.forward(self.backRightLeg.max_back, 200))
@@ -231,28 +234,100 @@ class Robot:
 
 
 	def turnRight_90(self):
-		return True
+		self.turning_position()
+		wait(1)
+		self.turnWheelRight()
+		wait(1.75)
+		self.stop()
+		wait(.5)
 
-	def turnRight(self, offset=0):
-	    return True
 
 	def turnLeft_90(self):
-	     return True
-
-	def turnLeft(self):
-		return True
+	    self.turning_position()
+	    wait(1)
+	    self.turnWheelLeft()
+	    wait(1.75)
+	    self.stop()
+	    wait(.5)
 
 	def turnAround(self):
-		return True
+		self.turning_position()
+		wait(1)
+		self.turnWheelRight()
+		wait(3.5)
+		self.stop()
+		wait(.5)
+		
 
 	def north(self):
-	    for i in xrange(0, 3):
-	        self.walk2()
+	    self.straight(1)
+	    
+	def east(self):
+	    self.turnRight_90()
+	    self.straight(1)
+	
+	def west(self):
+	    self.turnLeft_90()
+	    self.straight(1)
+	    
+	def south(self):
+	    self.turnAround()
+	    self.straight(1)
+	    
+	def straight(self, num_squares):
+	    self.driving_position()
+	    self.drive()
+	    wait(3.5*num_squares)
+	    self.stop()
+	    wait(3)
+	    
 
-	def straight(self, number_of_moves):
-		return True
+    def follow_instructions(instr_array):
+        for instr in instr_array:
+            if instr == 'Go Forward':
+                self.north()
+            elif instr == 'Go Left':
+                self.west()
+            elif instr == 'Go Right':
+                self.east()
+            elif instr == 'Go Backward':
+                self.south()
 
 
+"""
+	def straight(self, number_of_moves, wheelState):
+	    self.driving_position
+	    prev_position = wheelState[0]
+	    total_dist = wheelState[1]
+	    
+	    if total_dist < 1024 * 2.9 * number_of_moves:
+	        self.drive()
+	        position = getMotorPositionCommand(11)
+	        rospy.loginfo(position)
+	        rospy.loginfo(prev_position)
+	        rospy.loginfo("----")
+	        
+	        if position >= prev_position:
+	            new_dist = position - prev_position
+	        else:
+	            new_dist = 1024 - prev_position + position
+	         
+		    total_dist += new_dist
+		    
+		    rospy.loginfo(new_dist)
+		    rospy.loginfo(total_dist)
+		    rospy.loginfo("-----------")
+		    
+		    prev_position = position
+		#else:
+		#    self.stop()
+		
+		wheelState = [prev_position, total_dist]
+		return wheelState
+"""
+		    
+
+"""
 	def move_east(self, number_of_moves):
 	    self.turnRight_90()
 	    for i in xrange(0, number_of_moves):
@@ -260,6 +335,7 @@ class Robot:
 	    #self.straight(number_of_moves)
 	    self.neutral_position()
 	    self.turnRight(100)
+
 
 	def west(self):
 	    self.turnLeft_90()
@@ -301,6 +377,7 @@ class Robot:
 	                rospy.loginfo("left")
 	                self.stepLeft()
 	                return number_of_steps - 1
+	     """
 
 
 def wait(seconds):
@@ -313,7 +390,13 @@ def shutdown(sig, stackframe):
     for wheel in [16, 11, 12, 9]:
         setMotorWheelSpeed(wheel, 0)
     sys.exit(0)
-
+    
+def setMotorSpeeds(speed):
+    setMotorTargetSpeed(PORT_MAP['back_right_shoulder'], speed)
+    setMotorTargetSpeed(PORT_MAP['front_right_shoulder'], speed)
+    setMotorTargetSpeed(PORT_MAP['back_left_shoulder'], speed)
+    setMotorTargetSpeed(PORT_MAP['front_left_shoulder'], speed)
+    
 # Main function
 if __name__ == "__main__":
     rospy.init_node('example_node', anonymous=True)
@@ -356,23 +439,33 @@ if __name__ == "__main__":
             number_of_steps = Ross.followWall(wall, number_of_steps)
             r.sleep()
     """
-    prevPosition = None
-    rotations = 0
+    prevPosition = getMotorPositionCommand(11)
+    wheelState = [prevPosition, 0]
+    Ross.driving_position()
+    wait(1)
     while not rospy.is_shutdown():
-        val = getMotorPositionCommand(16)
-        rospy.loginfo(val)
-        rospy.loginfo("prev val")
-        rospy.loginfo(prevPosition)
-        if prevPosition:
-            if val < prevPosition:
-                rospy.loginfo("rotation")
-                rotations = rotations + 1
-                rospy.loginfo(rotations)
-        prevPosition = val
-        Ross.driving_position()
-        Ross.drive()
+       #wheelState = Ross.straight(1, wheelState)
+       Ross.east()
+    """
+        while rotations < 6:
+            val = getMotorPositionCommand(16)
+            rospy.loginfo(val)
+            rospy.loginfo("prev val")
+            rospy.loginfo(prevPosition)
+            if prevPosition:
+                if val < prevPosition:
+                    rospy.loginfo("rotation")
+                    rotations = rotations + 1
+                    rospy.loginfo(rotations)
+            prevPosition = val
+            Ross.driving_position()
+            Ross.drive()
+        rospy.loginfo("stopping")
+        Ross.stop()
+        
+    """
     # Ross.neutral_position()
     your_map = EECSMap()
     your_map.printCostMap()
     your_map.printObstacleMap()
-    print your_map
+    print your_maprosco

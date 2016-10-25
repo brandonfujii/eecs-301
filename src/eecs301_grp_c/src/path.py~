@@ -34,7 +34,7 @@ def single_path(my_map, start, start_heading, end, end_heading):
             map_queue.put(next_position)
             visited.append(next_position)
             my_map.costMap[current_position[0]][current_position[1] - 1] = current_cost + 1
-            
+    print map_queue.get()
 def main():
     my_map = EECSMap()
     single_path(my_map, [0, 0], 0, [7, 7], 3)
