@@ -43,7 +43,7 @@ IR_PORT = 2
 HEAD_PORT = 1
 INNER_OFFSET = 200
 OUTER_OFFSET = 75
-PORT_MAP = { 'back_right_shoulder': 4, 'back_right_wheel': 16, 'back_left_shoulder': 3, 'back_left_wheel' : 11, 'front_right_shoulder': 2, 'front_right_wheel': 12, 'front_left_shoulder': 1, 'front_left_wheel': 9 }
+PORT_MAP = { 'back_right_shoulder': 4, 'back_right_wheel': 16, 'back_left_shoulder': 3, 'back_left_wheel' : 12, 'front_right_shoulder': 2, 'front_right_wheel': 11, 'front_left_shoulder': 1, 'front_left_wheel': 9 }
 
 # wrapper function to call service to set a motor mode
 # 0 = set target positions, 1 = set wheel moving
@@ -166,8 +166,8 @@ class Robot:
 		self.right_ir_port = 6
 		self.head_port = 4
 		self.backRightLeg = Leg(16, 4, operator.add, 544, 205)
-		self.backLeftLeg = Leg(11, 3, operator.sub, 480, 819)
-		self.frontRightLeg = Leg(12, 2, operator.add, 819, 480)
+		self.backLeftLeg = Leg(12, 3, operator.sub, 480, 819)
+		self.frontRightLeg = Leg(11, 2, operator.add, 819, 480)
 		self.frontLeftLeg = Leg(9, 1, operator.sub, 205, 544)
 		self.head_threshold = 1100
 		self.left_threshold = 200
@@ -189,7 +189,21 @@ class Robot:
 		self.frontRightLeg.setWheelSpeed(direction, speed)
 
 	def drive(self):
-	    self.setAllWheels('forward', 500)
+	    #self.setAllWheels('forward', 1000)
+	    offset = 30
+	    self.backLeftLeg.setWheelSpeed('forward', 1000-offset)
+	    self.frontLeftLeg.setWheelSpeed('forward', 1000-offset)
+	    self.backRightLeg.setWheelSpeed('forward', 1000)
+	    self.frontRightLeg.setWheelSpeed('forward', 1000)
+	    
+	def adjust_start_drive(self):
+	    self.backRightLeg.setShoulderPosition(512)
+	    self.frontLeftLeg.setShoulderPosition(512, -15)
+	    self.backLeftLeg.setShoulderPosition(512)
+	    self.frontRightLeg.setShoulderPosition(512, 15)
+	    wait(2)
+	    self.drive()
+	    wait(0.1)
 	    
 	def stop(self):
 	    self.setAllWheels('forward', 0)
@@ -200,11 +214,17 @@ class Robot:
 	    self.backLeftLeg.setShoulderPosition(self.backLeftLeg.forward(self.backLeftLeg.max_back, 200))
 	    self.frontRightLeg.setShoulderPosition(self.frontRightLeg.forward(self.frontRightLeg.max_forward, -200))
 
-	def turnWheelRight(self):
-	    self.setAllWheels('counter-clockwise', 700)
+	def turnWheelRight(self, speed = 1000):
+	    self.backLeftLeg.setWheelSpeed('forward', speed)
+	    self.frontLeftLeg.setWheelSpeed('forward', speed)
+	    self.backRightLeg.setWheelSpeed('backward', speed)
+	    self.frontRightLeg.setWheelSpeed('backward', speed)
 
-	def turnWheelLeft(self):
-		self.setAllWheels('clockwise', 700)
+	def turnWheelLeft(self, speed = 1000):
+	    self.backLeftLeg.setWheelSpeed('backward', speed)
+	    self.frontLeftLeg.setWheelSpeed('backward', speed)
+	    self.backRightLeg.setWheelSpeed('forward', speed)
+	    self.frontRightLeg.setWheelSpeed('forward', speed)
 
 	def walk2(self):
 	    if getSensorValue(self.head_port) >= self.head_threshold:
@@ -235,27 +255,23 @@ class Robot:
 
 
 	def turnRight_90(self):
-		self.turning_position()
-		wait(2)
 		self.turnWheelRight()
-		wait(1.75)
+		wait(0.70)
 		self.stop()
-		wait(.1)
+		wait(1)
 
 
 	def turnLeft_90(self):
-	    self.turning_position()
-	    wait(2)
 	    self.turnWheelLeft()
-	    wait(1.75)
+	    wait(0.70)
 	    self.stop()
-	    wait(.1)
+	    wait(1)
 
 	def turnAround(self):
-		self.turning_position()
-		wait(2)
+		# self.turning_position()
+		# wait(2)
 		self.turnWheelRight()
-		wait(3.25)
+		wait(1.4)
 		self.stop()
 		wait(.1)
 		
@@ -273,12 +289,21 @@ class Robot:
 	    self.turnAround()
 	    
 	def straight(self, num_squares):
-	    self.driving_position()
-	    wait(2)
+	    self.turnWheelLeft(175)
+	    wait(0.1)
 	    self.drive()
-	    wait(3.5*num_squares)
+	    if num_squares == 1:
+	        wait(1.6)
+	    else:
+	        wait(1.7*num_squares)
+	    self.turnWheelRight(200)
+	    wait(0.2)
 	    self.stop()
-	    wait(.1)
+	    wait(1)
+	    
+	def straight2(self):
+	    self.adjust_start_drive()
+	    self.straight()
 	    
 	def follow_instructions(self, instr_array):
 	    for instr in instr_array:
@@ -427,14 +452,14 @@ if __name__ == "__main__":
     # end_heading = int(args[3])
     # print start, start_heading
 
-    prevPosition = getMotorPositionCommand(11)
-    wheelState = [prevPosition, 0]
-    Ross.driving_position()
-    wait(1)
-    # while not rospy.is_shutdown():
+
+    #while not rospy.is_shutdown():
+    #    Ross.turnRight_90()
        #wheelState = Ross.straight(1, wheelState)
     # print start, end
         # Ross.drive()
+    
     Ross.follow_instructions(getPath(start, start_heading, end, end_heading))
+    
 
     # Ross.neutral_position()
