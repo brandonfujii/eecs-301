@@ -251,8 +251,8 @@ class Robot:
 	        elif instr[0] == 'Turn Around':
 	            self.turnAround()
 	
-	def wander(self, instr_array, position):
-	    self.detect_walls(position)
+	def wander(self, instr_array, position, my_map):
+	    my_map = self.detect_walls(position, my_map)
 	    for instr in instr_array:
 	        if instr == 'Go Forward':
 	            self.straight(1)
@@ -262,9 +262,8 @@ class Robot:
 	            self.turnRight_90()
 	        elif instr == 'Turn Around':
 	            self.turnAround()
-	        self.detect_walls(position)
+	        my_map = self.detect_walls(position, my_map)
 	        position = self.update_position(instr, position)
-	        print position
 	        
 	def update_position(self, instr, position):
 	    if instr == 'Go Forward':
@@ -282,18 +281,26 @@ class Robot:
 	        position[2] = position[2] % 4 + 1
 	    elif instr == 'Turn Around':
 	        position[2] = (position[2] - 3) % 4 + 1
+	    print position
 	    return position
 	            
-	def detect_walls(self,position):
+	def detect_walls(self, position, my_map):
 	    head_value = getSensorValue(self.head_port)
 	    left_value = getSensorValue(self.left_ir_port)
 	    right_value = getSensorValue(self.right_ir_port)
 	    if head_value >= 1000:
 	        rospy.loginfo("front wall detected")
+	        my_map.setObstacle(position[0], position[1], 1, position[2])
 	    if left_value >= 100:
 	        rospy.loginfo("left wall detected")
+	        heading = (position[2] - 2) % 4 + 1
+	        my_map.setObstacle(position[0], position[1], 1, heading)
 	    if right_value >= 100:
 	        rospy.loginfo("right wall detected")
+	        heading = position[2] % 4 + 1
+	        my_map.setObstacle(position[0], position[1], 1, heading)
+	    my_map.printObstacleMap()
+	    return my_map
 	    
 	"""
 		num_forwards = 0
@@ -384,6 +391,6 @@ if __name__ == "__main__":
     #instructions = Ross.remove_adjacents(getPath(start, start_heading, end, end_heading))
     #Ross.follow_instructions(instructions)
     
-    Ross.wander(getPath(start, start_heading, end, end_heading), [2,1,3])
+    Ross.wander(getPath(start, start_heading, end, end_heading), [2,1,3], map_2)
     # rospy.loginfo(Ross.remove_adjacents(getPath(start, start_heading, end, end_heading)))
     
