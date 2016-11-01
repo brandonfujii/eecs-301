@@ -43,7 +43,7 @@ IR_PORT = 2
 HEAD_PORT = 1
 INNER_OFFSET = 200
 OUTER_OFFSET = 75
-PORT_MAP = { 'back_right_shoulder': 4, 'back_right_wheel': 16, 'back_left_shoulder': 3, 'back_left_wheel' : 12, 'front_right_shoulder': 2, 'front_right_wheel': 11, 'front_left_shoulder': 1, 'front_left_wheel': 9 }
+PORT_MAP = {'back_right_wheel': 16, 'back_left_wheel' : 12, 'front_right_wheel': 11, 'front_left_wheel': 9 }
 
 # wrapper function to call service to set a motor mode
 # 0 = set target positions, 1 = set wheel moving
@@ -127,26 +127,13 @@ def getIsMotorMovingCommand(motor_id):
         print "Service call failed: %s"%e
 
 class Leg:
-	def __init__(self, wheel_port, shoulder_port, forward, max_forward, max_back):
+	def __init__(self, wheel_port):
 		self.wheel = wheel_port
-		self.shoulder = shoulder_port
-		self.forward = forward
-		self.max_forward = max_forward
-		self.max_back = max_back
 
-	def getShoulderPosition(self, part):
-		return getMotorPositionCommand(self.shoulder)
-
-	def setShoulderPosition(self, target_val, offset = 0):
-		setMotorTargetPositionCommand(self.shoulder, self.forward(target_val, offset))
 
 	def setWheelSpeed(self, direction, speed):
 		if speed > 1024 or speed < 0:
 			rospy.loginfo("Speed must be between 0 and 1024")
-		elif direction == 'clockwise':
-			setMotorWheelSpeed(self.wheel, 1024 + speed)
-		elif direction == 'counter-clockwise':
-			setMotorWheelSpeed(self.wheel, speed)
 		elif direction == 'forward':
 			if self.wheel == PORT_MAP['back_right_wheel'] or self.wheel == PORT_MAP['front_right_wheel']:
 				setMotorWheelSpeed(self.wheel, 1024 + speed)
@@ -158,17 +145,17 @@ class Leg:
 			else:
 				setMotorWheelSpeed(self.wheel, 1024 + speed)
 		else:
-			rospy.loginfo("Direction must be clockwise, counter-clockwise, foward, or backward")
+			rospy.loginfo("Direction must be forward, or backward")
 
 class Robot:
 	def __init__(self):
 		self.left_ir_port = 3
 		self.right_ir_port = 6
 		self.head_port = 4
-		self.backRightLeg = Leg(16, 4, operator.add, 544, 205)
-		self.backLeftLeg = Leg(12, 3, operator.sub, 480, 819)
-		self.frontRightLeg = Leg(11, 2, operator.add, 819, 480)
-		self.frontLeftLeg = Leg(9, 1, operator.sub, 205, 544)
+		self.backRightLeg = Leg(PORT_MAP['back_right_wheel'])
+		self.backLeftLeg = Leg(PORT_MAP['back_left_wheel'])
+		self.frontRightLeg = Leg(PORT_MAP['front_right_wheel'])
+		self.frontLeftLeg = Leg(PORT_MAP['front_left_wheel'])
 		self.head_threshold = 1100
 		self.left_threshold = 200
 		self.right_threshold = 100
@@ -176,11 +163,6 @@ class Robot:
 		self.right_wall_threshold = 340
 		self.action = None
 
-	def driving_position(self):
-	    self.backRightLeg.setShoulderPosition(512)
-	    self.frontLeftLeg.setShoulderPosition(512)
-	    self.backLeftLeg.setShoulderPosition(512)
-	    self.frontRightLeg.setShoulderPosition(512)
 
 	def setAllWheels(self, direction, speed):
 		self.backLeftLeg.setWheelSpeed(direction, speed)
@@ -189,30 +171,14 @@ class Robot:
 		self.frontRightLeg.setWheelSpeed(direction, speed)
 
 	def drive(self):
-	    #self.setAllWheels('forward', 1000)
 	    offset = 30
 	    self.backLeftLeg.setWheelSpeed('forward', 1000-offset)
 	    self.frontLeftLeg.setWheelSpeed('forward', 1000-offset)
 	    self.backRightLeg.setWheelSpeed('forward', 1000)
 	    self.frontRightLeg.setWheelSpeed('forward', 1000)
 	    
-	def adjust_start_drive(self):
-	    self.backRightLeg.setShoulderPosition(512)
-	    self.frontLeftLeg.setShoulderPosition(512, -15)
-	    self.backLeftLeg.setShoulderPosition(512)
-	    self.frontRightLeg.setShoulderPosition(512, 15)
-	    wait(2)
-	    self.drive()
-	    wait(0.1)
-	    
 	def stop(self):
 	    self.setAllWheels('forward', 0)
-
-	def turning_position(self):
-	    self.backRightLeg.setShoulderPosition(self.backRightLeg.forward(self.backRightLeg.max_back, 200))
-	    self.frontLeftLeg.setShoulderPosition(self.frontLeftLeg.forward(self.frontLeftLeg.max_forward, -200))
-	    self.backLeftLeg.setShoulderPosition(self.backLeftLeg.forward(self.backLeftLeg.max_back, 200))
-	    self.frontRightLeg.setShoulderPosition(self.frontRightLeg.forward(self.frontRightLeg.max_forward, -200))
 
 	def turnWheelRight(self, speed = 1000):
 	    self.backLeftLeg.setWheelSpeed('forward', speed)
@@ -226,40 +192,11 @@ class Robot:
 	    self.backRightLeg.setWheelSpeed('forward', speed)
 	    self.frontRightLeg.setWheelSpeed('forward', speed)
 
-	def walk2(self):
-	    if getSensorValue(self.head_port) >= self.head_threshold:
-	        if getSensorValue(self.left_ir_port) >= self.left_threshold and getSensorValue(self.right_ir_port) >= self.right_threshold:
-	            self.turnAround()
-	        elif getSensorValue(self.right_ir_port) >= self.right_threshold:
-	            if getSensorValue(self.left_ir_port) < self.left_threshold:
-	                self.turnLeft_90()
-	            else:
-	                self.turnAround()
-	        elif getSensorValue(self.left_ir_port) >= self.left_threshold:
-	            if getSensorValue(self.right_ir_port) < self.right_threshold:
-	                self.turnRight_90()
-	            else:
-	                self.turnAround()
-	    else:
-	        self.stepLeft()
-	        self.stepRight()
-	        rospy.loginfo("walked")
-
-	def stepLeft(self):
-	    self.action = 'step_left'
-
-
-	def stepRight(self):
-	    self.action = 'step_right'
-
-
-
 	def turnRight_90(self):
 		self.turnWheelRight()
 		wait(0.70)
 		self.stop()
 		wait(1)
-
 
 	def turnLeft_90(self):
 	    self.turnWheelLeft()
@@ -268,25 +205,10 @@ class Robot:
 	    wait(1)
 
 	def turnAround(self):
-		# self.turning_position()
-		# wait(2)
 		self.turnWheelRight()
 		wait(1.4)
 		self.stop()
 		wait(.1)
-		
-
-	def north(self):
-	    self.straight(1)
-	    
-	def east(self):
-	    self.turnRight_90()
-	
-	def west(self):
-	    self.turnLeft_90()
-	    
-	def south(self):
-	    self.turnAround()
 	    
 	def straight(self, num_squares):
 	    self.turnWheelLeft(175)
@@ -301,20 +223,23 @@ class Robot:
 	    self.stop()
 	    wait(1)
 	    
-	def straight2(self):
-	    self.adjust_start_drive()
-	    self.straight()
 	    
 	def follow_instructions(self, instr_array):
+		num_forwards = 0
 	    for instr in instr_array:
-	        if instr == 'Go Forward':   
-	            self.north()
-	        elif instr == 'Turn Left':
-	            self.west()
-	        elif instr == 'Turn Right':
-	            self.east()
-	        elif instr == 'Turn Around':
-	            self.south()
+	        if instr == 'Go Forward':
+	        	num_forwards +=1
+	        else:
+	        	if num_forwards > 0:
+	        		self.straight(num_forwards)
+	        		num_forwards = 0
+
+	        	if instr == 'Turn Left':
+	        		self.turnLeft_90()
+	        	elif instr == 'Turn Right':
+	        		self.turnRight_90()
+	        	elif instr == 'Turn Around':
+	        		self.turnAround()
 
 
 """
@@ -401,6 +326,34 @@ class Robot:
 	                self.stepLeft()
 	                return number_of_steps - 1
 	     """
+	"""
+
+		def stepLeft(self):
+	    self.action = 'step_left'
+
+
+	def stepRight(self):
+	    self.action = 'step_right'
+
+	def walk2(self):
+	    if getSensorValue(self.head_port) >= self.head_threshold:
+	        if getSensorValue(self.left_ir_port) >= self.left_threshold and getSensorValue(self.right_ir_port) >= self.right_threshold:
+	            self.turnAround()
+	        elif getSensorValue(self.right_ir_port) >= self.right_threshold:
+	            if getSensorValue(self.left_ir_port) < self.left_threshold:
+	                self.turnLeft_90()
+	            else:
+	                self.turnAround()
+	        elif getSensorValue(self.left_ir_port) >= self.left_threshold:
+	            if getSensorValue(self.right_ir_port) < self.right_threshold:
+	                self.turnRight_90()
+	            else:
+	                self.turnAround()
+	    else:
+	        self.stepLeft()
+	        self.stepRight()
+	        rospy.loginfo("walked")
+	        """
 
 
 def wait(seconds):
