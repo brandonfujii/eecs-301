@@ -7,6 +7,7 @@ from fw_wrapper.srv import *
 import operator
 from map import *
 from path import *
+from itertools import groupby
 
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
@@ -206,9 +207,9 @@ class Robot:
 
 	def turnAround(self):
 		self.turnWheelRight()
-		wait(1.4)
+		wait(1.75)
 		self.stop()
-		wait(.1)
+		wait(1)
 	    
 	def straight(self, num_squares):
 	    self.turnWheelLeft(175)
@@ -225,9 +226,19 @@ class Robot:
 	    
 	    
 	def follow_instructions(self, instr_array):
-		num_forwards = 0
 	    for instr in instr_array:
-	        if instr == 'Go Forward':
+	        if instr[0] == 'Go Forward':
+	            self.straight(instr[1])
+	        elif instr[0] == 'Turn Left':
+	            self.turnLeft_90()
+	        elif instr[0] == 'Turn Right':
+	            self.turnRight_90()
+	        elif instr[0] == 'Turn Around':
+	            self.turnAround()
+	"""
+		num_forwards = 0
+		for instr in instr_array:
+		    if instr == 'Go Forward':
 	        	num_forwards +=1
 	        else:
 	        	if num_forwards > 0:
@@ -240,122 +251,11 @@ class Robot:
 	        		self.turnRight_90()
 	        	elif instr == 'Turn Around':
 	        		self.turnAround()
-
-
-"""
-	def straight(self, number_of_moves, wheelState):
-	    self.driving_position
-	    prev_position = wheelState[0]
-	    total_dist = wheelState[1]
-	    
-	    if total_dist < 1024 * 2.9 * number_of_moves:
-	        self.drive()
-	        position = getMotorPositionCommand(11)
-	        rospy.loginfo(position)
-	        rospy.loginfo(prev_position)
-	        rospy.loginfo("----")
-	        
-	        if position >= prev_position:
-	            new_dist = position - prev_position
-	        else:
-	            new_dist = 1024 - prev_position + position
-	         
-		    total_dist += new_dist
-		    
-		    rospy.loginfo(new_dist)
-		    rospy.loginfo(total_dist)
-		    rospy.loginfo("-----------")
-		    
-		    prev_position = position
-		#else:
-		#    self.stop()
-		
-		wheelState = [prev_position, total_dist]
-		return wheelState
-"""
-		    
-
-"""
-	def move_east(self, number_of_moves):
-	    self.turnRight_90()
-	    for i in xrange(0, number_of_moves):
-	        self.north()
-	    #self.straight(number_of_moves)
-	    self.neutral_position()
-	    self.turnRight(100)
-
-
-	def west(self):
-	    self.turnLeft_90()
-	    for i in xrange(0, 3):
-	        self.walk2()
-
-	def followWall(self, wall, number_of_steps):
-	    if wall == 'right':
-	        right_sensor_value = getSensorValue(self.right_ir_port)
-	        rospy.loginfo(number_of_steps)
-	        if number_of_steps >= 6:
-	            self.turnLeft()
-	            return 0
-	        elif number_of_steps <= -6:
-	            self.turnRight()
-	            return 0
-	        else:
-	            if right_sensor_value >= self.right_wall_threshold:
-	               self.stepLeft()
-	               return number_of_steps + 1
-	            else:
-	               self.stepRight()
-	               return number_of_steps - 1
-	    else:
-	        left_sensor_value = getSensorValue(self.left_ir_port)
-	        rospy.loginfo(number_of_steps)
-	        if number_of_steps >= 10:
-	            self.turnLeft()
-	            return 0
-	        elif number_of_steps <= -7:
-	            self.turnLeft()
-	            return 0
-	        else:
-	            if left_sensor_value >= self.left_wall_threshold:
-	                rospy.loginfo("Right")
-	                self.stepRight()
-	                return number_of_steps + 1
-	            else:
-	                rospy.loginfo("left")
-	                self.stepLeft()
-	                return number_of_steps - 1
-	     """
 	"""
-
-		def stepLeft(self):
-	    self.action = 'step_left'
-
-
-	def stepRight(self):
-	    self.action = 'step_right'
-
-	def walk2(self):
-	    if getSensorValue(self.head_port) >= self.head_threshold:
-	        if getSensorValue(self.left_ir_port) >= self.left_threshold and getSensorValue(self.right_ir_port) >= self.right_threshold:
-	            self.turnAround()
-	        elif getSensorValue(self.right_ir_port) >= self.right_threshold:
-	            if getSensorValue(self.left_ir_port) < self.left_threshold:
-	                self.turnLeft_90()
-	            else:
-	                self.turnAround()
-	        elif getSensorValue(self.left_ir_port) >= self.left_threshold:
-	            if getSensorValue(self.right_ir_port) < self.right_threshold:
-	                self.turnRight_90()
-	            else:
-	                self.turnAround()
-	    else:
-	        self.stepLeft()
-	        self.stepRight()
-	        rospy.loginfo("walked")
-	        """
-
-
+	def remove_adjacents(self, instr_array):
+	    grouped_arr = [ (k, sum(1 for i in g)) for k, g in groupby(instr_array) ]
+	    return grouped_arr 
+        
 def wait(seconds):
     initial = rospy.Time.now()
     while rospy.Time.now() < initial + rospy.Duration(seconds):
@@ -366,12 +266,6 @@ def shutdown(sig, stackframe):
     for wheel in [16, 11, 12, 9]:
         setMotorWheelSpeed(wheel, 0)
     sys.exit(0)
-    
-def setMotorSpeeds(speed):
-    setMotorTargetSpeed(PORT_MAP['back_right_shoulder'], speed)
-    setMotorTargetSpeed(PORT_MAP['front_right_shoulder'], speed)
-    setMotorTargetSpeed(PORT_MAP['back_left_shoulder'], speed)
-    setMotorTargetSpeed(PORT_MAP['front_left_shoulder'], speed)
     
 # Main function
 if __name__ == "__main__":
@@ -385,7 +279,7 @@ if __name__ == "__main__":
     #for x in xrange(1, 9):
     #   setMotorTargetSpeed(x, 500)
 
-    setMotorSpeeds(50)
+    # setMotorSpeeds(50)
     for wheel in [11, 9, 16, 12]:
         setMotorMode(wheel, 1)
 
@@ -412,7 +306,7 @@ if __name__ == "__main__":
     # print start, end
         # Ross.drive()
     
-    Ross.follow_instructions(getPath(start, start_heading, end, end_heading))
+    instructions = Ross.remove_adjacents(getPath(start, start_heading, end, end_heading))
+    Ross.follow_instructions(instructions)
+    # rospy.loginfo(Ross.remove_adjacents(getPath(start, start_heading, end, end_heading)))
     
-
-    # Ross.neutral_position()
