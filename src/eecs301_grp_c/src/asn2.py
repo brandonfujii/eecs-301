@@ -151,17 +151,17 @@ class Leg:
 class Robot:
 	def __init__(self):
 		self.left_ir_port = 3
-		self.right_ir_port = 6
+		self.right_ir_port = 5
 		self.head_port = 4
 		self.backRightLeg = Leg(PORT_MAP['back_right_wheel'])
 		self.backLeftLeg = Leg(PORT_MAP['back_left_wheel'])
 		self.frontRightLeg = Leg(PORT_MAP['front_right_wheel'])
 		self.frontLeftLeg = Leg(PORT_MAP['front_left_wheel'])
-		self.head_threshold = 1100
-		self.left_threshold = 200
-		self.right_threshold = 100
-		self.left_wall_threshold = 480
-		self.right_wall_threshold = 340
+		self.head_threshold = 2100
+		self.left_threshold = 450*3
+		self.right_threshold = 400*3
+		self.left_map_threshold = 450
+		self.right_map_threshold = 400
 		self.action = None
 
 
@@ -173,10 +173,30 @@ class Robot:
 
 	def drive(self):
 	    offset = 30
-	    self.backLeftLeg.setWheelSpeed('forward', 1000-offset)
-	    self.frontLeftLeg.setWheelSpeed('forward', 1000-offset)
-	    self.backRightLeg.setWheelSpeed('forward', 1000)
-	    self.frontRightLeg.setWheelSpeed('forward', 1000)
+	    self.backLeftLeg.setWheelSpeed('forward', 800-offset)
+	    self.frontLeftLeg.setWheelSpeed('forward', 800-offset)
+	    self.backRightLeg.setWheelSpeed('forward', 800)
+	    self.frontRightLeg.setWheelSpeed('forward', 800)
+	    
+	def corrected_drive(self):
+	    right_value = getSensorValue(self.right_ir_port)
+	    left_value = getSensorValue(self.left_ir_port)
+	    if right_value > self.right_threshold:
+	        self.backLeftLeg.setWheelSpeed('forward', 800-30-90) #850
+	        self.frontLeftLeg.setWheelSpeed('forward', 800-30-90)
+	        self.backRightLeg.setWheelSpeed('forward', 800+90)
+	        self.frontRightLeg.setWheelSpeed('forward', 800+90)
+	        rospy.loginfo( right_value - self.right_threshold )
+	    
+	    elif left_value > self.left_threshold:
+	        self.backLeftLeg.setWheelSpeed('forward', 800-30+90)
+	        self.frontLeftLeg.setWheelSpeed('forward', 800-30+90)
+	        self.backRightLeg.setWheelSpeed('forward', 800-90) #880
+	        self.frontRightLeg.setWheelSpeed('forward', 800-90)
+	        rospy.loginfo( left_value - self.left_threshold )
+	    else:
+	        self.drive()
+	    
 	    
 	def stop(self):
 	    self.setAllWheels('forward', 0)
@@ -195,7 +215,7 @@ class Robot:
 
 	def turnRight_90(self):
 		self.turnWheelRight()
-		wait(0.70)
+		wait(0.80)
 		self.stop()
 		wait(1)
 
@@ -207,23 +227,18 @@ class Robot:
 
 	def turnAround(self):
 		self.turnWheelRight()
-		wait(1.75)
+		wait(1.7)
 		self.stop()
 		wait(1)
 	    
 	def straight(self, num_squares):
-	    self.turnWheelLeft(175)
+	    self.turnWheelLeft(125)
 	    wait(0.1)
-	    self.drive()
-	    if num_squares == 1:
-	        wait(1.6)
-	    else:
-	        wait(1.7*num_squares)
-	    self.turnWheelRight(200)
+	    timeout(8 * num_squares, self.corrected_drive) #6
+	    self.turnWheelRight(165)
 	    wait(0.2)
 	    self.stop()
 	    wait(1)
-	    
 	    
 	def follow_instructions(self, instr_array):
 	    for instr in instr_array:
@@ -235,6 +250,51 @@ class Robot:
 	            self.turnRight_90()
 	        elif instr[0] == 'Turn Around':
 	            self.turnAround()
+	
+	def wander(self, instr_array, position):
+	    self.detect_walls(position)
+	    for instr in instr_array:
+	        if instr == 'Go Forward':
+	            self.straight(1)
+	        elif instr == 'Turn Left':
+	            self.turnLeft_90()
+	        elif instr == 'Turn Right':
+	            self.turnRight_90()
+	        elif instr == 'Turn Around':
+	            self.turnAround()
+	        self.detect_walls(position)
+	        position = self.update_position(instr, position)
+	        print position
+	        
+	def update_position(self, instr, position):
+	    if instr == 'Go Forward':
+	        if position[2] == 1:
+	            position[0] -= 1
+	        elif position[2] == 2:
+	            position[1] += 1
+	        elif position[2] == 3:
+	            position[0] += 1
+	        elif position[2] == 4:
+	            position[1] -= 1
+	    elif instr == 'Turn Left':
+	        position[2] = (position[2] - 2) % 4 + 1
+	    elif instr == 'Turn Right':
+	        position[2] = position[2] % 4 + 1
+	    elif instr == 'Turn Around':
+	        position[2] = (position[2] - 3) % 4 + 1
+	    return position
+	            
+	def detect_walls(self,position):
+	    head_value = getSensorValue(self.head_port)
+	    left_value = getSensorValue(self.left_ir_port)
+	    right_value = getSensorValue(self.right_ir_port)
+	    if head_value >= 1000:
+	        rospy.loginfo("front wall detected")
+	    if left_value >= 100:
+	        rospy.loginfo("left wall detected")
+	    if right_value >= 100:
+	        rospy.loginfo("right wall detected")
+	    
 	"""
 		num_forwards = 0
 		for instr in instr_array:
@@ -260,6 +320,15 @@ def wait(seconds):
     initial = rospy.Time.now()
     while rospy.Time.now() < initial + rospy.Duration(seconds):
         continue
+
+def hello(greeting, name):
+    rospy.loginfo(greeting + ", " + name)
+
+def timeout(iterations, func, *args):
+    while iterations > 0:
+        func(*args)
+        iterations -= 1
+
 
 def shutdown(sig, stackframe):
     rospy.loginfo("Setting wheels to zero")
@@ -291,7 +360,7 @@ if __name__ == "__main__":
     if not args or len(args) < 6:
         rospy.loginfo("Usage: rosrun eecs301_grp_c asn2.py start_x start_y start_heading end_x end_y end_heading")
         sys.exit(1)
-    print args
+    #print args
     start = [int(args[0]), int(args[1])]
     start_heading = int(args[2])
     end = [int(args[3]), int(args[4])]
@@ -305,8 +374,16 @@ if __name__ == "__main__":
        #wheelState = Ross.straight(1, wheelState)
     # print start, end
         # Ross.drive()
+        
+    #while True:
+    #    rospy.loginfo(getSensorValue(Ross.head_port))
     
-    instructions = Ross.remove_adjacents(getPath(start, start_heading, end, end_heading))
-    Ross.follow_instructions(instructions)
+    map_2 = EECSMap()
+    map_2.clearObstacleMap()
+    #map_2.printObstacleMap()
+    #instructions = Ross.remove_adjacents(getPath(start, start_heading, end, end_heading))
+    #Ross.follow_instructions(instructions)
+    
+    Ross.wander(getPath(start, start_heading, end, end_heading), [2,1,3])
     # rospy.loginfo(Ross.remove_adjacents(getPath(start, start_heading, end, end_heading)))
     
