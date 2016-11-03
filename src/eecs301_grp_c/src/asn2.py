@@ -251,19 +251,31 @@ class Robot:
 	        elif instr[0] == 'Turn Around':
 	            self.turnAround()
 	
-	def wander(self, instr_array, position, my_map):
+	def wander_follow_instr(self, instr_array, position, my_map, unvisited):
 	    my_map = self.detect_walls(position, my_map)
 	    for instr in instr_array:
-	        if instr == 'Go Forward':
-	            self.straight(1)
-	        elif instr == 'Turn Left':
-	            self.turnLeft_90()
-	        elif instr == 'Turn Right':
-	            self.turnRight_90()
-	        elif instr == 'Turn Around':
-	            self.turnAround()
-	        position = self.update_position(instr, position)
-	        my_map = self.detect_walls(position, my_map)
+	    	if self.can_follow_instr(instr, position, my_map):
+		        if instr == 'Go Forward':
+		            self.straight(1)
+		        elif instr == 'Turn Left':
+		            self.turnLeft_90()
+		        elif instr == 'Turn Right':
+		            self.turnRight_90()
+		        elif instr == 'Turn Around':
+		            self.turnAround()
+		        position = self.update_position(instr, position)
+		        my_map = self.detect_walls(position, my_map)
+		        unvisited.remove([position[0], position[1]])
+		    else:
+		    	return False
+		return True
+
+	def can_follow_instr(instr, position, my_map):
+		new_heading = self.turn_direction_num(self, instr, position[2])
+		if my_map.getNeighborObstacle(position[0], position[1], new_heading) == 0:
+			return True
+		else:
+			return False
 	        
 	def update_position(self, instr, position):
 	    if instr == 'Go Forward':
@@ -275,15 +287,28 @@ class Robot:
 	            position[0] += 1
 	        elif position[2] == 4:
 	            position[1] -= 1
-	    elif instr == 'Turn Left':
-	        position[2] = (position[2] - 2) % 4 + 1
-	    elif instr == 'Turn Right':
-	        position[2] = position[2] % 4 + 1
-	    elif instr == 'Turn Around':
-	        position[2] = (position[2] - 3) % 4 + 1
+	    else:
+	    	position[2] = self.turn_direction_num(instr, position[2])
+	    #elif instr == 'Turn Left':
+	    #    position[2] = (position[2] - 2) % 4 + 1
+	    #elif instr == 'Turn Right':
+	    #    position[2] = position[2] % 4 + 1
+	    #elif instr == 'Turn Around':
+	    #    position[2] = (position[2] - 3) % 4 + 1
 	    print position
 	    return position
-	            
+	
+	def turn_direction_num(self, instr, direction_num):
+		if instr == 'Turn Left':
+	        new_direction = (direction_num - 2) % 4 + 1
+	    elif instr == 'Turn Right':
+	        new_direction = direction_num % 4 + 1
+	    elif instr == 'Turn Around':
+	        new_direction = (direction_num - 3) % 4 + 1
+	    else:
+	    	new_direction = direction_num
+	    return new_direction
+
 	def detect_walls(self, position, my_map):
 	    head_value = getSensorValue(self.head_port)
 	    left_value = getSensorValue(self.left_ir_port)
@@ -293,11 +318,13 @@ class Robot:
 	        my_map.setObstacle(position[0], position[1], 1, position[2])
 	    if left_value >= 100:
 	        rospy.loginfo("left wall detected")
-	        heading = (position[2] - 2) % 4 + 1
+	        #heading = (position[2] - 2) % 4 + 1
+	        heading = self.turn_direction_num('Turn Left', position[2])
 	        my_map.setObstacle(position[0], position[1], 1, heading)
 	    if right_value >= 100:
 	        rospy.loginfo("right wall detected")
-	        heading = position[2] % 4 + 1
+	        #heading = position[2] % 4 + 1
+	        heading = self.turn_direction_num('Turn Right', position[2])
 	        my_map.setObstacle(position[0], position[1], 1, heading)
 	    my_map.printObstacleMap()
 	    return my_map
