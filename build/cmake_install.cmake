@@ -126,6 +126,7 @@ IF(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   INCLUDE("/home/rosuser/ros_workspace/build/gtest/cmake_install.cmake")
   INCLUDE("/home/rosuser/ros_workspace/build/fw_wrapper/cmake_install.cmake")
+  INCLUDE("/home/rosuser/ros_workspace/build/eecs301_grp_K/cmake_install.cmake")
   INCLUDE("/home/rosuser/ros_workspace/build/eecs301_grp_c/cmake_install.cmake")
 
 ENDIF(NOT CMAKE_INSTALL_LOCAL_ONLY)

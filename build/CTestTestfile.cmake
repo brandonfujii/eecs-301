@@ -6,4 +6,5 @@
 # testing this directory and lists subdirectories to be tested as well.
 SUBDIRS(gtest)
 SUBDIRS(fw_wrapper)
+SUBDIRS(eecs301_grp_K)
 SUBDIRS(eecs301_grp_c)

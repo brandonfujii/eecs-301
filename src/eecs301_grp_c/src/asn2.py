@@ -250,10 +250,36 @@ class Robot:
 	            self.turnRight_90()
 	        elif instr[0] == 'Turn Around':
 	            self.turnAround()
-	
+	            
+	def wander(self, start, start_heading):
+	    my_map = EECSMap()
+	    my_map.clearObstacleMap()
+	    print my_map.costMap
+	    unvisited = []
+	    for i in range(8):
+	        for j in range(8):
+	            unvisited.append([i, j])
+	    unvisited.remove(start)
+	    start.extend([start_heading])
+	    current = start
+	    end = random.choice(unvisited)
+	    instructions = getPath(current[:2], start_heading, end, 1)
+	    print "END:", end
+	    print instructions
+	    while len(unvisited) != 0:
+	        print len(unvisited)
+	        if self.wander_follow_instr(instructions, current, my_map, unvisited):
+	            print "REACHED END"
+	            end = random.choice(unvisited)
+	            print "NEW END:"
+	            break
+	        instructions = getPath(current[:2], current[2], end, 1)
+	        print instructions
+
 	def wander_follow_instr(self, instr_array, position, my_map, unvisited):
 	    my_map = self.detect_walls(position, my_map)
 	    for instr in instr_array:
+	        print instr
 	    	if self.can_follow_instr(instr, position, my_map):
 		        if instr == 'Go Forward':
 		            self.straight(1)
@@ -265,13 +291,14 @@ class Robot:
 		            self.turnAround()
 		        position = self.update_position(instr, position)
 		        my_map = self.detect_walls(position, my_map)
-		        unvisited.remove([position[0], position[1]])
-		    else:
-		    	return False
+		        if [position[0], position[1]] in unvisited:
+		            unvisited.remove([position[0], position[1]])
+            else:
+                return False
 		return True
 
-	def can_follow_instr(instr, position, my_map):
-		new_heading = self.turn_direction_num(self, instr, position[2])
+	def can_follow_instr(self, instr, position, my_map):
+		new_heading = self.turn_direction_num(instr, position[2])
 		if my_map.getNeighborObstacle(position[0], position[1], new_heading) == 0:
 			return True
 		else:
@@ -295,19 +322,18 @@ class Robot:
 	    #    position[2] = position[2] % 4 + 1
 	    #elif instr == 'Turn Around':
 	    #    position[2] = (position[2] - 3) % 4 + 1
-	    print position
 	    return position
 	
 	def turn_direction_num(self, instr, direction_num):
 		if instr == 'Turn Left':
-	        new_direction = (direction_num - 2) % 4 + 1
-	    elif instr == 'Turn Right':
-	        new_direction = direction_num % 4 + 1
-	    elif instr == 'Turn Around':
-	        new_direction = (direction_num - 3) % 4 + 1
-	    else:
-	    	new_direction = direction_num
-	    return new_direction
+		    new_direction = (direction_num - 2) % 4 + 1
+		elif instr == 'Turn Right':
+		    new_direction = direction_num % 4 + 1
+		elif instr == 'Turn Around':
+		    new_direction = (direction_num - 3) % 4 + 1
+		else:
+		    new_direction = direction_num
+		return new_direction
 
 	def detect_walls(self, position, my_map):
 	    head_value = getSensorValue(self.head_port)
@@ -328,24 +354,7 @@ class Robot:
 	        my_map.setObstacle(position[0], position[1], 1, heading)
 	    my_map.printObstacleMap()
 	    return my_map
-	    
-	"""
-		num_forwards = 0
-		for instr in instr_array:
-		    if instr == 'Go Forward':
-	        	num_forwards +=1
-	        else:
-	        	if num_forwards > 0:
-	        		self.straight(num_forwards)
-	        		num_forwards = 0
-
-	        	if instr == 'Turn Left':
-	        		self.turnLeft_90()
-	        	elif instr == 'Turn Right':
-	        		self.turnRight_90()
-	        	elif instr == 'Turn Around':
-	        		self.turnAround()
-	"""
+	   
 	def remove_adjacents(self, instr_array):
 	    grouped_arr = [ (k, sum(1 for i in g)) for k, g in groupby(instr_array) ]
 	    return grouped_arr 
@@ -354,10 +363,7 @@ def wait(seconds):
     initial = rospy.Time.now()
     while rospy.Time.now() < initial + rospy.Duration(seconds):
         continue
-
-def hello(greeting, name):
-    rospy.loginfo(greeting + ", " + name)
-
+        
 def timeout(iterations, func, *args):
     while iterations > 0:
         func(*args)
@@ -387,8 +393,6 @@ if __name__ == "__main__":
         setMotorMode(wheel, 1)
 
     Ross = Robot()
-    # Ross.walking_position_left()
-    # Ross.turning_position()
 
     args = sys.argv[1:]
     if not args or len(args) < 6:
@@ -399,25 +403,16 @@ if __name__ == "__main__":
     start_heading = int(args[2])
     end = [int(args[3]), int(args[4])]
     end_heading = int(args[5])
-    # end_heading = int(args[3])
-    # print start, start_heading
-
-
-    #while not rospy.is_shutdown():
-    #    Ross.turnRight_90()
-       #wheelState = Ross.straight(1, wheelState)
-    # print start, end
-        # Ross.drive()
-        
-    #while True:
-    #    rospy.loginfo(getSensorValue(Ross.head_port))
     
-    map_2 = EECSMap()
-    map_2.clearObstacleMap()
-    #map_2.printObstacleMap()
+    #Ross.wander([1,1],1)
+    my_map = EECSMap()
+    my_map.clearObstacleMap()
+    my_map.printObstacleMap()
+    print my_map.getNeighborObstacle(0,0,1)
+    
     #instructions = Ross.remove_adjacents(getPath(start, start_heading, end, end_heading))
     #Ross.follow_instructions(instructions)
     
-    Ross.wander(getPath(start, start_heading, end, end_heading), [2,1,3], map_2)
+    # Ross.wander(getPath(start, start_heading, end, end_heading), [2,1,3], map_2)
     # rospy.loginfo(Ross.remove_adjacents(getPath(start, start_heading, end, end_heading)))
     

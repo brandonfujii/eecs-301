@@ -276,6 +276,12 @@ catkin_DIR:PATH=/opt/ros/indigo/share/catkin/cmake
 cpp_common_DIR:PATH=/opt/ros/indigo/share/cpp_common/cmake
 
 //Value Computed by CMake
+eecs301_grp_K_BINARY_DIR:STATIC=/home/rosuser/ros_workspace/build/eecs301_grp_K
+
+//Value Computed by CMake
+eecs301_grp_K_SOURCE_DIR:STATIC=/home/rosuser/ros_workspace/src/eecs301_grp_K
+
+//Value Computed by CMake
 eecs301_grp_c_BINARY_DIR:STATIC=/home/rosuser/ros_workspace/build/eecs301_grp_c
 
 //Value Computed by CMake
@@ -475,7 +481,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=4
+CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=5
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

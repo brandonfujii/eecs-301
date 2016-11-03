@@ -2,4 +2,4 @@
 source_root_dir = "/home/rosuser/ros_workspace/src"
 whitelisted_packages = "".split(';') if "" != "" else []
 blacklisted_packages = "".split(';') if "" != "" else []
-underlay_workspaces = "/opt/ros/indigo".split(';') if "/opt/ros/indigo" != "" else []
+underlay_workspaces = "/home/rosuser/ros_workspace/devel;/opt/ros/indigo".split(';') if "/home/rosuser/ros_workspace/devel;/opt/ros/indigo" != "" else []
