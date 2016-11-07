@@ -252,9 +252,7 @@ class Robot:
 	            self.turnAround()
 	            
 	def wander(self, start, start_heading):
-	    my_map = EECSMap()
-	    my_map.clearObstacleMap()
-	    print my_map.costMap
+	    my_map = onlyExtWalls()
 	    unvisited = []
 	    for i in range(8):
 	        for j in range(8):
@@ -375,6 +373,20 @@ def shutdown(sig, stackframe):
     for wheel in [16, 11, 12, 9]:
         setMotorWheelSpeed(wheel, 0)
     sys.exit(0)
+
+def onlyExtWalls():
+	my_map = EECSMap()
+	my_map.clearObstacleMap()
+	for i in range(8):
+		# north walls
+		my_map.setObstacle(0, i, 1, 1)
+		# south walls
+		my_map.setObstacle(7,i,1,3)
+		# west walls
+		my_map.setObstacle(i,0,1,4)
+		# east walls
+		my_map.setObstacle(i,7,1,2)
+	return my_map
     
 # Main function
 if __name__ == "__main__":
