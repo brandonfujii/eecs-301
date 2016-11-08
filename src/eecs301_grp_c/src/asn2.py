@@ -262,16 +262,20 @@ class Robot:
 	    current_head = start_heading
 	    while len(unvisited) != 0:
 	    	my_map = self.detect_walls(current_pos, my_map)
-	    	if self.can_follow_instr('Go Forward', current_pos, current_head, my_map) and self.explored('forward'):
+	    	if (self.can_follow_instr('Go Forward', current_pos, current_head, my_map) and 
+	    		self.explored('forward', current_head, current_pos, unvisited) == 0):
 	    		self.straight(1)
 	    		current_head = self.update_position('Go Forward', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Left', current_pos, current_head, my_map) and self.explored('left'):
+	    	elif (self.can_follow_instr('Turn Left', current_pos, current_head, my_map) and 
+	    		self.explored('left', current_head, current_pos, unvisited) == 0):
 	    		self.turnLeft_90()
 	    		current_head = self.update_position('Turn Left', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Right', current_pos, current_head, my_map) and self.explored('right'):
+	    	elif (self.can_follow_instr('Turn Right', current_pos, current_head, my_map) and 
+	    		self.explored('right', current_head, current_pos, unvisited) == 0):
 	    		self.turnRight_90()
 	    		current_head = self.update_position('Turn Right', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Around', current_pos, current_head, my_map) and self.explored('back'):
+	    	elif self.can_follow_instr('Turn Around', current_pos, current_head, my_map) and 
+	    		self.explored('back', current_head, current_pos, unvisited) == 0):
 	    		self.turnAround()
 	    		current_head = self.update_position('Turn Around', current_pos, current_head)
 	    	elif self.can_follow_instr('Go Forward', current_pos, current_head, my_map):
