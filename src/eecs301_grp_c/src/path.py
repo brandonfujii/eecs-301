@@ -5,9 +5,12 @@ import random
 
 DIRECTIONS = ['North', 'East', 'South', 'West']
 
-def getPath(start, start_heading, end, end_heading):
-    my_map = EECSMap()
-    my_map.clearObstacleMap()
+def getPath(start, start_heading, end, end_heading, a_map, take_map=0):
+    my_map = None
+    if take_map:
+        my_map = a_map
+    else:
+        my_map = EECSMap()
     mapQueue = Queue()
     mapQueue.put(start)
     current_position = start

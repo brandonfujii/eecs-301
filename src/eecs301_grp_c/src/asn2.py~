@@ -243,14 +243,17 @@ class Robot:
 	    
 	def follow_instructions(self, instr_array):
 	    for instr in instr_array:
-	        if instr[0] == 'Go Forward':
-	            self.straight(instr[1])
-	        elif instr[0] == 'Turn Left':
+	        # change this to instr[0] to make it work with old code
+	        if instr == 'Go Forward':
+	            self.straight(1)
+	        elif instr == 'Turn Left':
 	            self.turnLeft_90()
-	        elif instr[0] == 'Turn Right':
+	        elif instr == 'Turn Right':
 	            self.turnRight_90()
-	        elif instr[0] == 'Turn Around':
+	        elif instr == 'Turn Around':
 	            self.turnAround()
+	        else:
+	            print "unrecognized instruction"
 
 	def can_follow_instr(self, instr, position, heading, my_map):
 		new_heading = self.turn_direction_num(instr, heading)
@@ -275,6 +278,10 @@ class Robot:
 	    return new_heading
 	    
 	def explored(self, direction, heading, pos, visited):
+	    print "explored direction", direction
+	    
+	    print "other condition", (pos[1]+1 <= 7)
+	    print "what it sdhould return", visited[pos[0], pos[1]+1]
 	    if direction == 'forward':
 	        if heading == 1 and pos[0] - 1 >= 0:
 	            return visited[pos[0] - 1, pos[1]]
@@ -285,14 +292,18 @@ class Robot:
             elif heading == 4 and pos[1] - 1 >= 0:
                 return visited[pos[0], pos[1] - 1]
 	    elif direction == 'left':
+	        print "at least this worked"
+	        print "explored heading", heading
+	        print "other condition", (pos[1]+1 <= 7)
 	        if heading == 1 and pos[1]-1 >= 0:
 	            return visited[pos[0], pos[1]-1]
             elif heading == 2 and pos[0]-1 >= 0:
                 return visited[pos[0]-1, pos[1]]
-            elif (heading == 3) and (pos[1]+1 <= 7):
-                return visited[pos[0], pos[1]+1]
+            elif heading == 3 and pos[1]+1 <= 7:
+                print "this ran"
+                return int(visited[pos[0], pos[1]+1])
             elif heading == 4 and pos[0]+1 <= 7:
-                return visited[pos[0]+1, pos[1]]
+                return int(visited[pos[0]+1, pos[1]])
 	    elif direction == 'backward':
 	        if heading == 1 and pos[0] + 1 >= 0:
 	            return visited[pos[0] + 1, pos[1]]
@@ -355,8 +366,14 @@ class Robot:
 	    current_pos = start
 	    current_head = start_heading
 	    
+	    steps = 0
+	    
+	    print np.sum(visited)
 	    while np.sum(visited) != 64:
-	        my_map = self.detect_walls(current_pos, current_head, my_map) 
+	        my_map = self.detect_walls(current_pos, current_head, my_map)
+	        print "Forward", self.can_follow_instr('Go Forward', current_pos, current_head, my_map)
+	        print "Left", self.can_follow_instr('Turn Left', current_pos, current_head, my_map)
+	        print "exploreddddddd" , self.explored('left', current_head, current_pos, visited)
 	        if self.can_follow_instr('Go Forward', current_pos, current_head, my_map) and self.explored('forward', current_head, current_pos, visited) == 0:
 	            self.straight(1)
 	            current_head = self.update_position('Go Forward', current_pos, current_head)
@@ -384,6 +401,19 @@ class Robot:
 	            current_head = self.update_position('Turn Around', current_pos, current_head)
 	            
 	        visited[current_pos[0], current_pos[1]] = 1
+	        print visited
+	        
+	        steps = steps + 1
+	        if steps % 5 == 0:
+	            start_p = raw_input("Type p to start pathfinding...")
+	            if start_p == 'p':
+	                coords = raw_input("Enter the coordinates: [ start_row, start_col, start_heading, end_row, end_col, end_heading ]")
+                    coords = coords.split(" ")
+                    instructions = getPath([int(coords[0]), int(coords[1])], int(coords[2]), [int(coords[3]), int(coords[4])], int(coords[5]), my_map, 1)
+                    print instructions
+                    self.follow_instructions(instructions)
+	                    
+	                    
         
 def wait(seconds):
     initial = rospy.Time.now()
@@ -470,8 +500,8 @@ if __name__ == "__main__":
     heading = 3
     
     while not rospy.is_shutdown():
-        rospy.loginfo(getSensorValue(Ross.head_port))
-        # Ross.wander2(start, start_heading)
+        # rospy.loginfo(getSensorValue(Ross.left_ir_port))
+        Ross.wander2(start, start_heading)
     
     """
     while not rospy.is_shutdown():
