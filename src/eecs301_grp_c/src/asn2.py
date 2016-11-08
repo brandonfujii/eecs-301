@@ -250,7 +250,7 @@ class Robot:
 	            self.turnRight_90()
 	        elif instr[0] == 'Turn Around':
 	            self.turnAround()
-"""
+
 	def wander2(self, start, start_heading):
 		my_map = onlyExtWalls()
 		unvisited = []
@@ -258,12 +258,39 @@ class Robot:
 	        for j in range(8):
 	            unvisited.append([i, j])
 	    unvisited.remove(start)
-	    start.extend([start_heading])
-	    position = start
+	    current_pos = start
+	    current_head = start_heading
 	    while len(unvisited) != 0:
-	    	my_map = self.detect_walls(position, my_map)
-	    	if self.can_follow_instr('Go Forward', position, my_map) and self.explored('forward', :
-"""
+	    	my_map = self.detect_walls(current_pos, my_map)
+	    	if self.can_follow_instr('Go Forward', current_pos, current_head, my_map) and self.explored('forward'):
+	    		self.straight(1)
+	    		current_head = self.update_position('Go Forward', current_pos, current_head)
+	    	elif self.can_follow_instr('Turn Left', current_pos, current_head, my_map) and self.explored('left'):
+	    		self.turnLeft_90()
+	    		current_head = self.update_position('Turn Left', current_pos, current_head)
+	    	elif self.can_follow_instr('Turn Right', current_pos, current_head, my_map) and self.explored('right'):
+	    		self.turnRight_90()
+	    		current_head = self.update_position('Turn Right', current_pos, current_head)
+	    	elif self.can_follow_instr('Turn Around', current_pos, current_head, my_map) and self.explored('back'):
+	    		self.turnAround()
+	    		current_head = self.update_position('Turn Around', current_pos, current_head)
+	    	elif self.can_follow_instr('Go Forward', current_pos, current_head, my_map):
+	    		self.straight(1)
+	    		current_head = self.update_position('Go Forward', current_pos, current_head)
+	    	elif self.can_follow_instr('Turn Left', current_pos, current_head, my_map):
+	    		self.turnLeft_90()
+	    		current_head = self.update_position('Turn Left', current_pos, current_head)
+	    	elif self.can_follow_instr('Turn Right', current_pos, current_head, my_map):
+	    		self.turnRight_90()
+	    		current_head = self.update_position('Turn Right', current_pos, current_head)
+	    	elif self.can_follow_instr('Turn Around', current_pos, current_head, my_map):
+	    		self.turnAround()
+	    		current_head = self.update_position('Turn Around', current_pos, current_head)
+	    	else:
+	    		print "I have become self aware"
+	    	if [curr_pos[0], curr_pos[1]] in unvisited: ############ does this still work?????????
+		            unvisited.remove([curr_pos[0], curr_pos[1]])
+
 	def wander(self, start, start_heading):
 	    my_map = onlyExtWalls()
 	    unvisited = []
@@ -326,7 +353,7 @@ class Robot:
 	            position[1] += 1
 	        elif heading == 3:
 	            position[0] += 1
-	        elif heading == 4: \
+	        elif heading == 4: 
 	            position[1] -= 1
 	    else:
 	    	new_heading = self.turn_direction_num(instr, heading)
