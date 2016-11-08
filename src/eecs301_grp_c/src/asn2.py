@@ -250,7 +250,20 @@ class Robot:
 	            self.turnRight_90()
 	        elif instr[0] == 'Turn Around':
 	            self.turnAround()
-	            
+"""
+	def wander2(self, start, start_heading):
+		my_map = onlyExtWalls()
+		unvisited = []
+	    for i in range(8):
+	        for j in range(8):
+	            unvisited.append([i, j])
+	    unvisited.remove(start)
+	    start.extend([start_heading])
+	    position = start
+	    while len(unvisited) != 0:
+	    	my_map = self.detect_walls(position, my_map)
+	    	if self.can_follow_instr('Go Forward', position, my_map) and self.explored('forward', :
+"""
 	def wander(self, start, start_heading):
 	    my_map = onlyExtWalls()
 	    unvisited = []
@@ -258,27 +271,30 @@ class Robot:
 	        for j in range(8):
 	            unvisited.append([i, j])
 	    unvisited.remove(start)
-	    start.extend([start_heading])
-	    current = start
+	    #start.extend([start_heading]) 
 	    end = random.choice(unvisited)
-	    instructions = getPath(current[:2], start_heading, end, 1)
+	    instructions = getPath(start, start_heading, end, 1)
 	    print "END:", end
 	    print instructions
+	    current_pos = start
+	    current_head = start_heading
 	    while len(unvisited) != 0:
 	        print len(unvisited)
-	        if self.wander_follow_instr(instructions, current, my_map, unvisited):
+	        current_head = self.wander_follow_instr(instructions, current_pos, current_head, my_map, unvisited)
+	        if current_head == 'great success'
 	            print "REACHED END"
 	            end = random.choice(unvisited)
+	            current_head = 1
 	            print "NEW END:"
-	            break
-	        instructions = getPath(current[:2], current[2], end, 1)
+	            break ######## why is this here
+	        instructions = getPath(current_pos, current_head, end, 1)
 	        print instructions
 
-	def wander_follow_instr(self, instr_array, position, my_map, unvisited):
-	    my_map = self.detect_walls(position, my_map)
+	def wander_follow_instr(self, instr_array, position, heading, my_map, unvisited):
+	    my_map = self.detect_walls(position, heading, my_map)
 	    for instr in instr_array:
 	        print instr
-	    	if self.can_follow_instr(instr, position, my_map):
+	    	if self.can_follow_instr(instr, position, heading, my_map):
 		        if instr == 'Go Forward':
 		            self.straight(1)
 		        elif instr == 'Turn Left':
@@ -287,40 +303,34 @@ class Robot:
 		            self.turnRight_90()
 		        elif instr == 'Turn Around':
 		            self.turnAround()
-		        position = self.update_position(instr, position)
-		        my_map = self.detect_walls(position, my_map)
-		        if [position[0], position[1]] in unvisited:
+		        heading = self.update_position(instr, position, heading)
+		        my_map = self.detect_walls(position, heading, my_map)
+		        if [position[0], position[1]] in unvisited: ############ does this still work?????????
 		            unvisited.remove([position[0], position[1]])
             else:
-                return False
-		return True
+                return heading
+		return 'great success'
 
-	def can_follow_instr(self, instr, position, my_map):
-		new_heading = self.turn_direction_num(instr, position[2])
+	def can_follow_instr(self, instr, position, heading, my_map):
+		new_heading = self.turn_direction_num(instr, heading)
 		if my_map.getNeighborObstacle(position[0], position[1], new_heading) == 0:
 			return True
 		else:
 			return False
 	        
-	def update_position(self, instr, position):
+	def update_position(self, instr, position, heading):
 	    if instr == 'Go Forward':
-	        if position[2] == 1:
+	        if heading == 1:
 	            position[0] -= 1
-	        elif position[2] == 2:
+	        elif heading == 2:
 	            position[1] += 1
-	        elif position[2] == 3:
+	        elif heading == 3:
 	            position[0] += 1
-	        elif position[2] == 4:
+	        elif heading == 4: \
 	            position[1] -= 1
 	    else:
-	    	position[2] = self.turn_direction_num(instr, position[2])
-	    #elif instr == 'Turn Left':
-	    #    position[2] = (position[2] - 2) % 4 + 1
-	    #elif instr == 'Turn Right':
-	    #    position[2] = position[2] % 4 + 1
-	    #elif instr == 'Turn Around':
-	    #    position[2] = (position[2] - 3) % 4 + 1
-	    return position
+	    	new_heading = self.turn_direction_num(instr, heading)
+	    return new_heading
 	
 	def turn_direction_num(self, instr, direction_num):
 		if instr == 'Turn Left':
@@ -333,23 +343,21 @@ class Robot:
 		    new_direction = direction_num
 		return new_direction
 
-	def detect_walls(self, position, my_map):
+	def detect_walls(self, position, heading, my_map):
 	    head_value = getSensorValue(self.head_port)
 	    left_value = getSensorValue(self.left_ir_port)
 	    right_value = getSensorValue(self.right_ir_port)
 	    if head_value >= 1000:
 	        rospy.loginfo("front wall detected")
-	        my_map.setObstacle(position[0], position[1], 1, position[2])
+	        my_map.setObstacle(position[0], position[1], 1, heading)
 	    if left_value >= 100:
 	        rospy.loginfo("left wall detected")
-	        #heading = (position[2] - 2) % 4 + 1
-	        heading = self.turn_direction_num('Turn Left', position[2])
-	        my_map.setObstacle(position[0], position[1], 1, heading)
+	        new_heading = self.turn_direction_num('Turn Left', heading)
+	        my_map.setObstacle(position[0], position[1], 1, new_heading) 
 	    if right_value >= 100:
 	        rospy.loginfo("right wall detected")
-	        #heading = position[2] % 4 + 1
-	        heading = self.turn_direction_num('Turn Right', position[2])
-	        my_map.setObstacle(position[0], position[1], 1, heading)
+	        new_heading = self.turn_direction_num('Turn Right', heading)
+	        my_map.setObstacle(position[0], position[1], 1, new_heading)
 	    my_map.printObstacleMap()
 	    return my_map
 	   
@@ -366,7 +374,6 @@ def timeout(iterations, func, *args):
     while iterations > 0:
         func(*args)
         iterations -= 1
-
 
 def shutdown(sig, stackframe):
     rospy.loginfo("Setting wheels to zero")
