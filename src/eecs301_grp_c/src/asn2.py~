@@ -278,50 +278,50 @@ class Robot:
 	    return new_heading
 	    
 	def explored(self, direction, heading, pos, visited):
-	    print "explored direction", direction
+	    #print "explored direction", direction
 	    
-	    print "other condition", (pos[1]+1 <= 7)
-	    print "what it sdhould return", visited[pos[0], pos[1]+1]
+	    #print "other condition", (pos[1]+1 <= 7)
+	    #print "what it sdhould return", visited[pos[0], pos[1]+1]
 	    if direction == 'forward':
 	        if heading == 1 and pos[0] - 1 >= 0:
 	            return visited[pos[0] - 1, pos[1]]
 	        elif heading == 2 and pos[1] + 1 <= 7:
 	            return visited[pos[0], pos[1]+1]
-            elif heading == 3 and pos[0] + 1 <= 7:
-                return visited[pos[0] + 1, pos[1]]
-            elif heading == 4 and pos[1] - 1 >= 0:
-                return visited[pos[0], pos[1] - 1]
+	        elif heading == 3 and pos[0] + 1 <= 7:
+	            return visited[pos[0] + 1, pos[1]]
+	        elif heading == 4 and pos[1] - 1 >= 0:
+	            return visited[pos[0], pos[1] - 1]
 	    elif direction == 'left':
-	        print "at least this worked"
-	        print "explored heading", heading
-	        print "other condition", (pos[1]+1 <= 7)
+	        #print "at least this worked"
+	        #print "explored heading", heading == 3
+	        #print "other condition", (pos[1]+1 <= 7)
 	        if heading == 1 and pos[1]-1 >= 0:
 	            return visited[pos[0], pos[1]-1]
-            elif heading == 2 and pos[0]-1 >= 0:
-                return visited[pos[0]-1, pos[1]]
-            elif heading == 3 and pos[1]+1 <= 7:
-                print "this ran"
-                return int(visited[pos[0], pos[1]+1])
+	        elif heading == 2 and pos[0]-1 >= 0:
+	            return visited[pos[0]-1, pos[1]]
+	        elif heading == 3 and pos[1]+1 <= 7:
+	            #print "this ran"
+	            return visited[pos[0], pos[1]+1]
             elif heading == 4 and pos[0]+1 <= 7:
-                return int(visited[pos[0]+1, pos[1]])
+                return visited[pos[0]+1, pos[1]]
 	    elif direction == 'backward':
 	        if heading == 1 and pos[0] + 1 >= 0:
 	            return visited[pos[0] + 1, pos[1]]
 	        elif heading == 2 and pos[1] - 1 <= 7:
 	            return visited[pos[0], pos[1]-1]
-            elif heading == 3 and pos[0] - 1 <= 7:
-                return visited[pos[0] - 1, pos[1]]
-            elif heading == 4 and pos[1] + 1 >= 0:
-                return visited[pos[0], pos[1] + 1]
+	        elif heading == 3 and pos[0] - 1 <= 7:
+	            return visited[pos[0] - 1, pos[1]]
+	        elif heading == 4 and pos[1] + 1 >= 0:
+	            return visited[pos[0], pos[1] + 1]
 	    elif direction == 'right':
 	        if heading == 1 and pos[1]+1 <= 7:
 	            return visited[pos[0], pos[1]+1]
-            elif heading == 2 and pos[0]+1 <= 7:
-                return visited[pos[0]+1, pos[1]]
-            elif heading == 3 and pos[1]-1 >= 0:
-                return visited[pos[0], pos[1]-1]
-            elif heading == 4 and pos[0]-1 >= 0:
-                return visited[pos[0]-1, pos[1]]
+	        elif heading == 2 and pos[0]+1 <= 7:
+	            return visited[pos[0]+1, pos[1]]
+	        elif heading == 3 and pos[1]-1 >= 0:
+	            return visited[pos[0], pos[1]-1]
+	        elif heading == 4 and pos[0]-1 >= 0:
+	            return visited[pos[0]-1, pos[1]]
 	    else:
 	        raise Exception('Does not recognize this direction')
 	        
@@ -357,7 +357,62 @@ class Robot:
 	   
 	def remove_adjacents(self, instr_array):
 	    grouped_arr = [ (k, sum(1 for i in g)) for k, g in groupby(instr_array) ]
-	    return grouped_arr 
+	    return grouped_arr
+	    
+	def wander3(self, start, start_heading, my_map, visited):
+	    visited[start[0], start[1]] = 1
+	    unvisited = np.where(visited==0)
+	    num_unvisited = len(unvisited[0])
+	    dest_index = random.randint(0,num_unvisited-1)
+	    dest = [ unvisited[0][dest_index], unvisited[1][dest_index] ]
+	    
+	    while np.sum(visited) < 64:
+	        print "We still have to visit ", 64 - np.sum(visited), " squares"
+	        instructions = getPath(start, start_heading, dest, 1, my_map, 1)
+	        print "I'm going to try getting to ", dest
+	        start_heading = self.wander_follow_instr(instructions, start, start_heading, my_map, unvisited)
+	        if start_heading == 'great success':
+	            print "Made it to my destination"
+	            unvisited = np.where(visited==0)
+	            num_unvisited = len(unvisited[0])
+	            if num_unvisited > 0:
+	                dest_index = random.randint(0,num_unvisited-1)
+	                dest = [ unvisited[0][dest_index], unvisited[1][dest_index] ]
+	                start_heading = 1 # sucessful runs always end pointing north
+	                print "Now, I'm going to try getting to " , dest
+	        else:
+	            "Can't make it there using my original plan, let me try a different way"
+	        start_p = raw_input("Type p to start pathfinding...")
+	        if start_p == 'p':
+	            coords = raw_input("Enter the coordinates: [ start_row, start_col, start_heading, end_row, end_col, end_heading ]")
+	            coords = coords.split(" ")
+	            new_instructions = getPath([int(coords[0]), int(coords[1])], int(coords[2]), [int(coords[3]), int(coords[4])], int(coords[5]), my_map, 1)
+	            print new_instructions
+	            self.follow_instructions(new_instructions)
+	            x = raw_input("Press enter to continue exploring")
+	            
+	        
+
+	def wander_follow_instr(self, instr_array, position, heading, my_map, unvisited):
+	    my_map = self.detect_walls(position, heading, my_map)
+	    for instr in instr_array:
+	        print instr
+	        if self.can_follow_instr(instr, position, heading, my_map):
+	            if instr == 'Go Forward':
+	                self.straight(1)
+	            elif instr == 'Turn Left':
+	                self.turnLeft_90()
+	            elif instr == 'Turn Right':
+	                self.turnRight_90()
+	            elif instr == 'Turn Around':
+	                self.turnAround()
+	            heading = self.update_position(instr, position, heading)
+	            my_map = self.detect_walls(position, heading, my_map)
+	            visited[position[0], position[1]] = 1
+	        else:
+	            return heading
+	    return 'great success'
+	        
 	    
 	def wander2(self, start, start_heading):
 	    my_map = onlyExtWalls()
@@ -368,39 +423,47 @@ class Robot:
 	    
 	    steps = 0
 	    
-	    print np.sum(visited)
-	    while np.sum(visited) != 64:
+	    #print np.sum(visited)
+	    while np.sum(visited) < 32:
 	        my_map = self.detect_walls(current_pos, current_head, my_map)
-	        print "Forward", self.can_follow_instr('Go Forward', current_pos, current_head, my_map)
-	        print "Left", self.can_follow_instr('Turn Left', current_pos, current_head, my_map)
-	        print "exploreddddddd" , self.explored('left', current_head, current_pos, visited)
+	        #print "Forward", self.can_follow_instr('Go Forward', current_pos, current_head, my_map)
+	        #print "Left", self.can_follow_instr('Turn Left', current_pos, current_head, my_map)
+	        #print "exploreddddddd" , self.explored('left', current_head, current_pos, visited)
 	        if self.can_follow_instr('Go Forward', current_pos, current_head, my_map) and self.explored('forward', current_head, current_pos, visited) == 0:
+	            print "Forward is unexplored, going there"
 	            self.straight(1)
 	            current_head = self.update_position('Go Forward', current_pos, current_head)
 	        elif self.can_follow_instr("Turn Left", current_pos, current_head, my_map) and self.explored('left', current_head, current_pos, visited) == 0:
+	            print "Left is unexplored, going there"
 	            self.turnLeft_90()
 	            current_head = self.update_position('Turn Left', current_pos, current_head)
 	        elif self.can_follow_instr("Turn Right", current_pos, current_head, my_map) and self.explored('right', current_head, current_pos, visited) == 0:
+	            print "Right is unexplored, going there"
 	            self.turnRight_90()
 	            current_head = self.update_position('Turn Right', current_pos, current_head)
 	        elif self.can_follow_instr("Turn Around", current_pos, current_head, my_map) and self.explored('backward', current_head, current_pos, visited) == 0:
+	            print "Backward is unexplored, going there"
 	            self.turnAround()
 	            current_head = self.update_position('Turn Around', current_pos, current_head)
 	        elif self.can_follow_instr('Go Forward', current_pos, current_head, my_map):
+	            print "Looks like all adjacecent squares are explored, going forward"
 	            self.straight(1)
 	            current_head = self.update_position('Go Forward', current_pos, current_head)
 	        elif self.can_follow_instr("Turn Left", current_pos, current_head, my_map):
+	            print "Looks like all adjacent squares are explored, going left"
 	            self.turnLeft_90()
 	            current_head = self.update_position('Turn Left', current_pos, current_head)
 	        elif self.can_follow_instr("Turn Right", current_pos, current_head, my_map):
+	            print "Looks like all adjacent squares are explored, going right"
 	            self.turnRight_90()
 	            current_head = self.update_position('Turn Right', current_pos, current_head)
-	            
 	        elif self.can_follow_instr("Turn Around", current_pos, current_head, my_map):
+	            print "Looks like all adjacent squares are explored, turning around"
 	            self.turnAround()
 	            current_head = self.update_position('Turn Around', current_pos, current_head)
 	            
 	        visited[current_pos[0], current_pos[1]] = 1
+	        print "Visited array:"
 	        print visited
 	        
 	        steps = steps + 1
@@ -408,13 +471,13 @@ class Robot:
 	            start_p = raw_input("Type p to start pathfinding...")
 	            if start_p == 'p':
 	                coords = raw_input("Enter the coordinates: [ start_row, start_col, start_heading, end_row, end_col, end_heading ]")
-                    coords = coords.split(" ")
-                    instructions = getPath([int(coords[0]), int(coords[1])], int(coords[2]), [int(coords[3]), int(coords[4])], int(coords[5]), my_map, 1)
-                    print instructions
-                    self.follow_instructions(instructions)
-	                    
-	                    
+	                coords = coords.split(" ")
+	                instructions = getPath([int(coords[0]), int(coords[1])], int(coords[2]), [int(coords[3]), int(coords[4])], int(coords[5]), my_map, 1)
+	                print instructions
+	                self.follow_instructions(instructions)
+	    self.wander3(current_pos, current_head, my_map, visited)
         
+            
 def wait(seconds):
     initial = rospy.Time.now()
     while rospy.Time.now() < initial + rospy.Duration(seconds):
@@ -487,10 +550,10 @@ if __name__ == "__main__":
     #print args
     start = [int(args[0]), int(args[1])]
     start_heading = int(args[2])
-    # end = [int(args[3]), int(args[4])]
-    # end_heading = int(args[5])
+    #end = [int(args[3]), int(args[4])]
+    #end_heading = int(args[5])
     
-    my_map = EECSMap()
+    my_map = onlyExtWalls()
     head_threshold = Ross.head_threshold
     head_sensor = getSensorValue(Ross.head_port)
     left_sensor = getSensorValue(Ross.left_ir_port)
@@ -499,87 +562,10 @@ if __name__ == "__main__":
     pos = [0, 0]
     heading = 3
     
-    while not rospy.is_shutdown():
+    if not rospy.is_shutdown():
+        instructions = getPath(start, start_heading, end, end_heading, EECSMap(), 1)
+        print instructions
+        Ross.follow_instructions(instructions)
+        #Ross.wander3(start, start_heading, my_map, np.array([[0,2],[0,3], [2,0]]))
         # rospy.loginfo(getSensorValue(Ross.left_ir_port))
         Ross.wander2(start, start_heading)
-    
-    """
-    while not rospy.is_shutdown():
-        if (head_sensor < head_threshold) and (right_sensor > 0) and (left_sensor > 0):
-            # Just drive forward
-            Ross.straight(1)
-            my_map.setObstacle(pos[0], pos[1], 0, heading)
-            pos = update_pos(pos, heading)
-        
-        # Front and left are blocked, Right is clear  
-        elif (head_sensor >= head_threshold) and (right_sensor == 0) and (left_sensor > 0):
-            # Turn right and drive one tile
-            Ross.turnRight_90()
-            Ross.straight(1)
-            next_heading = change_heading((heading + 1) % 4)
-            my_map.setObstacle(pos[0], pos[1], 0, next_heading)
-            pos = update_pos(pos, next_heading)
-        
-        # Front and Right are blocked, left is clear   
-        elif (head_sensor >= head_threshold) and (right_sensor > 0) and (left_sensor == 0):
-            # Turn left and drive one tile
-            Ross.turnLeft_90()
-            Ross.straight(1)
-            next_heading = change_heading((heading + 3) % 4)
-            my_map.setObstacle(pos[0], pos[1], 0, next_heading)
-            pos = update_pos(pos, next_heading)
-            
-        # Front and right are clear, both are unexplored
-        elif (head_sensor < head_threshold) and (right_sensor == 0) and (left_sensor > 0) and (not Ross.explored("right", heading, pos, visited)) and (not Ross.explored("forward", heading, pos, visited)):
-            right_heading = Ross.turn_direction_num("Turn Right", heading)
-            my_map.setObstacle(pos[0], pos[1], 0, heading)
-            my_map.setObstacle(pos[0], pos[1], 0, right_heading)
-            Ross.straight(1)
-
-        # Front and left are clear, both are unexplored
-        elif (head_sensor < head_threshold) and (right_sensor > 0) and (left_sensor == 0) and (not Ross.explored("left", heading, pos, visited)) and (not Ross.explored("forward", heading, pos, visited)):
-            left_heading = Ross.turn_direction_num("Turn Left", heading)
-            my_map.setObstacle(pos[0], pos[1], 0, heading)
-            my_map.setObstacle(pos[0], pos[1], 0, left_heading)
-            Ross.straight(1)
-            
-        # right and left are clear, both are unexplored
-        elif (head_sensor >= head_threshold and (right_sensor == 0) and (left_sensor == 0) and (not Ross.explored("right", heading, pos, visited)) and (not Ross.explored("left", heading, pos, visited)):
-            # Turn right and forward
-            right_heading = Ross.turn_direction_num("Turn Right", heading)
-            left_heading = Ross.turn_direction_num("Turn Left", heading)
-            my_map.setObstacle(pos[0], pos[1], 0, left_heading)
-            my_map.setObstacle(pos[0], pos[1], 0, right_heading)
-            Ross.turnRight_90()
-            Ross.straight(1)
-
-        # All sides are clear, all are unexplored
-        elif (head_sensor < head_threshold) and (right_sensor == 0) and (left_sensor == 0) and (not Ross.explored("right", heading, pos, visited)) and (not Ross.explored("left", heading, pos, visited)) and (not Ross.explored("forward", heading, pos, visited)):
-            right_heading = Ross.turn_direction_num("Turn Right", heading)
-            left_heading = Ross.turn_direction_num("Turn Left", heading)
-            my_map.setObstacle(pos[0], pos[1], 0, heading)
-            my_map.setObstacle(pos[0], pos[1], 0, left_heading)
-            my_map.setObstacle(pos[0], pos[1], 0, right_heading)
-            Ross.straight(1)
-        
-        # front and right are clear and right is explored and front is unexplored
-        elif (head_sensor < head_threshold) and (right_sensor == 0) and (left_sensor > 0) and (Ross.explored("right", heading, pos, visited)) and (not Ross.explored("forward", heading, pos, visited)):
-        
-        # front and right are clear andright is unexplored and front is explored
-        elif (head_sensor < head_threshold) and (right_sensor == 0) and (left_sensor > 0) and (not Ross.explored("right", heading, pos, visited)) and (Ross.explored("forward", heading, pos, visited)):
-        
-        
-        # front and left are clear and left is explored and front is unexplored
-        elif (head_sensor < head_threshold) and (right_sensor > 0) and (left_sensor == 0) and (Ross.explored("left", heading, pos, visited)) and (not Ross.explored("forward", heading, pos, visited)):
-        
-        # front and right are clear andright is unexplored and front is explored
-        elif (head_sensor < head_threshold) and (right_sensor > 0) and (left_sensor == 0) and (not Ross.explored("left", heading, pos, visited)) and (Ross.explored("forward", heading, pos, visited)):
-        
-        # right and left are clear and right is explored and left is unexplored
-        elif (head_sensor >= head_threshold) and (right_sensor == 0) and (left_sensor == 0) and (not Ross.explored("left", heading, pos, visited)) and (Ross.explored("right", heading, pos, visited)):
-        
-        # right and left are clear and right is unexplored and left is explored
-        elif (head_sensor >= head_threshold) and (right_sensor == 0) and (left_sensor == 0) and (Ross.explored("left", heading, pos, visited)) and (not Ross.explored("right", heading, pos, visited)):
-        """ 
-        
-    

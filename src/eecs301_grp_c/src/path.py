@@ -21,12 +21,12 @@ def getPath(start, start_heading, end, end_heading, a_map, take_map=0):
     while not mapQueue.empty():
         current_position = mapQueue.get()
         current_cost = my_map.costMap[current_position[0]][current_position[1]]
-        my_map.printCostMap()
+        #my_map.printCostMap()
         if my_map.getNeighborObstacle(current_position[0], current_position[1], DIRECTION.North) == 0 and ([current_position[0]-1, current_position[1]] not in visited):
             next_position = [current_position[0]-1, current_position[1]]
             mapQueue.put(next_position)
             visited.append(next_position)
-            print current_position
+            #print current_position
             my_map.costMap[current_position[0]-1][current_position[1]] = current_cost+1
         if my_map.getNeighborObstacle(current_position[0], current_position[1], DIRECTION.East) == 0 and ([current_position[0], current_position[1]+1] not in visited):
             next_position = [current_position[0], current_position[1]+1]
