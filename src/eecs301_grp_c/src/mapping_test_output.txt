@@ -1,0 +1,36 @@
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O | O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+     --- ---                     
+| O   O   O | O | O   O   O   O | 
+ --- ---                         
+| O   O   O | O | O   O   O   O | 
+                                 
+| O   O | O   O | O   O   O   O | 
+         ---                     
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+[INFO] [WallTime: 1478815825.318190] 547
+[INFO] [WallTime: 1478815825.652602] 673
+[INFO] [WallTime: 1478815825.987575] 494
+[INFO] [WallTime: 1478815826.341732] 481
+[INFO] [WallTime: 1478815826.660799] 567
+Visited array:
+[[ 1.  0.  0.  0.  0.  0.  0.  0.]
+ [ 1.  0.  0.  0.  0.  0.  0.  0.]
+ [ 1.  0.  0.  1.  0.  0.  0.  0.]
+ [ 1.  1.  1.  1.  0.  0.  0.  0.]
+ [ 0.  0.  1.  1.  0.  0.  0.  0.]
+ [ 0.  0.  1.  1.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]]
+Type p to start pathfinding...p
+Enter the coordinates: [ start_row, start_col, start_heading, end_row, end_col, end_heading ]4 3 1 0 0 1
+['Go Forward', 'Go Forward', 'Go Forward', 'Go Forward', 'Turn Left', 'Go Forward', 'Go Forward', 'Go Forward', 'Turn Right']
+

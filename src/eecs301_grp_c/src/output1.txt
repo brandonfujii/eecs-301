@@ -1,0 +1,457 @@
+[INFO] [WallTime: 1478818034.251043] Starting Group X Control Node...
+[INFO] [WallTime: 1478818034.691520] left wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  1.  1.]]
+[INFO] [WallTime: 1478818039.337817] left wall detected
+[INFO] [WallTime: 1478818039.338192] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                         ---     
+| O   O   O   O   O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  1.  1.  1.]]
+[INFO] [WallTime: 1478818044.040879] left wall detected
+[INFO] [WallTime: 1478818044.041249] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O   O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818048.709882] front wall detected
+[INFO] [WallTime: 1478818048.710235] 2669
+[INFO] [WallTime: 1478818048.710516] left wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Right is unexplored, going there
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818051.099863] left wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+Type p to start pathfinding...Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+[INFO] [WallTime: 1478818061.826472] 1171
+[INFO] [WallTime: 1478818062.125633] 1330
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818063.958276] left wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+[INFO] [WallTime: 1478818064.624144] 1281
+[INFO] [WallTime: 1478818064.943573] 1352
+[INFO] [WallTime: 1478818065.287696] 1339
+[INFO] [WallTime: 1478818065.641456] 1047
+[INFO] [WallTime: 1478818065.945619] 523
+[INFO] [WallTime: 1478818066.289987] 72
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818068.696744] left wall detected
+[INFO] [WallTime: 1478818068.697110] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818073.380147] front wall detected
+[INFO] [WallTime: 1478818073.380509] 2033
+[INFO] [WallTime: 1478818073.380788] left wall detected
+[INFO] [WallTime: 1478818073.381053] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                 ---             
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Looks like all adjacent squares are explored, turning around
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818076.695754] left wall detected
+[INFO] [WallTime: 1478818076.696109] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                 ---             
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Looks like all adjacecent squares are explored, going forward
+[INFO] [WallTime: 1478818078.622176] 6
+[INFO] [WallTime: 1478818078.941505] 276
+[INFO] [WallTime: 1478818079.245980] 374
+[INFO] [WallTime: 1478818079.540502] 271
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+Type p to start pathfinding...[INFO] [WallTime: 1478818082.109054] left wall detected
+[INFO] [WallTime: 1478818082.109430] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                 ---             
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Looks like all adjacecent squares are explored, going forward
+[INFO] [WallTime: 1478818082.756794] 104
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818086.672595] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                 ---             
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Left is unexplored, going there
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                 ---             
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+[INFO] [WallTime: 1478818091.562159] 519
+[INFO] [WallTime: 1478818091.890773] 551
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+[INFO] [WallTime: 1478818093.654971] right wall detected
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                 ---             
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                     ---         
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+[INFO] [WallTime: 1478818094.306919] 563
+[INFO] [WallTime: 1478818094.641458] 592
+[INFO] [WallTime: 1478818094.951157] 407
+[INFO] [WallTime: 1478818095.275238] 461
+[INFO] [WallTime: 1478818095.585158] 158
+[INFO] [WallTime: 1478818096.198468] 415
+[INFO] [WallTime: 1478818096.557645] 349
+Visited array:
+[[ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  0.]
+ [ 0.  0.  0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  0.  1.  1.  1.  1.]]
+Obstacle Map: 
+ --- --- --- --- --- --- --- --- 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                                 
+| O   O   O   O   O   O   O   O | 
+                 ---             
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O | O   O   O | 
+                                 
+| O   O   O   O | O   O   O   O | 
+                     ---         
+| O   O   O   O   O   O   O   O | 
+                     --- ---     
+| O   O   O   O | O   O   O   O | 
+ --- --- --- --- --- --- --- --- 
+Forward is unexplored, going there
+[INFO] [WallTime: 1478818099.039275] Setting wheels to zero

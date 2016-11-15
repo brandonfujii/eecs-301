@@ -8,6 +8,7 @@ import operator
 from map import *
 from path import *
 from itertools import groupby
+import numpy as np
 
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
@@ -242,101 +243,17 @@ class Robot:
 	    
 	def follow_instructions(self, instr_array):
 	    for instr in instr_array:
-	        if instr[0] == 'Go Forward':
-	            self.straight(instr[1])
-	        elif instr[0] == 'Turn Left':
+	        # change this to instr[0] to make it work with old code
+	        if instr == 'Go Forward':
+	            self.straight(1)
+	        elif instr == 'Turn Left':
 	            self.turnLeft_90()
-	        elif instr[0] == 'Turn Right':
+	        elif instr == 'Turn Right':
 	            self.turnRight_90()
-	        elif instr[0] == 'Turn Around':
+	        elif instr == 'Turn Around':
 	            self.turnAround()
-
-	def wander2(self, start, start_heading):
-		my_map = onlyExtWalls()
-		unvisited = []
-	    for i in range(8):
-	        for j in range(8):
-	            unvisited.append([i, j])
-	    unvisited.remove(start)
-	    current_pos = start
-	    current_head = start_heading
-	    while len(unvisited) != 0:
-	    	my_map = self.detect_walls(current_pos, my_map)
-	    	if self.can_follow_instr('Go Forward', current_pos, current_head, my_map) and self.explored('forward'):
-	    		self.straight(1)
-	    		current_head = self.update_position('Go Forward', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Left', current_pos, current_head, my_map) and self.explored('left'):
-	    		self.turnLeft_90()
-	    		current_head = self.update_position('Turn Left', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Right', current_pos, current_head, my_map) and self.explored('right'):
-	    		self.turnRight_90()
-	    		current_head = self.update_position('Turn Right', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Around', current_pos, current_head, my_map) and self.explored('back'):
-	    		self.turnAround()
-	    		current_head = self.update_position('Turn Around', current_pos, current_head)
-	    	elif self.can_follow_instr('Go Forward', current_pos, current_head, my_map):
-	    		self.straight(1)
-	    		current_head = self.update_position('Go Forward', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Left', current_pos, current_head, my_map):
-	    		self.turnLeft_90()
-	    		current_head = self.update_position('Turn Left', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Right', current_pos, current_head, my_map):
-	    		self.turnRight_90()
-	    		current_head = self.update_position('Turn Right', current_pos, current_head)
-	    	elif self.can_follow_instr('Turn Around', current_pos, current_head, my_map):
-	    		self.turnAround()
-	    		current_head = self.update_position('Turn Around', current_pos, current_head)
-	    	else:
-	    		print "I have become self aware"
-	    	if [curr_pos[0], curr_pos[1]] in unvisited: ############ does this still work?????????
-		            unvisited.remove([curr_pos[0], curr_pos[1]])
-
-	def wander(self, start, start_heading):
-	    my_map = onlyExtWalls()
-	    unvisited = []
-	    for i in range(8):
-	        for j in range(8):
-	            unvisited.append([i, j])
-	    unvisited.remove(start)
-	    #start.extend([start_heading]) 
-	    end = random.choice(unvisited)
-	    instructions = getPath(start, start_heading, end, 1)
-	    print "END:", end
-	    print instructions
-	    current_pos = start
-	    current_head = start_heading
-	    while len(unvisited) != 0:
-	        print len(unvisited)
-	        current_head = self.wander_follow_instr(instructions, current_pos, current_head, my_map, unvisited)
-	        if current_head == 'great success'
-	            print "REACHED END"
-	            end = random.choice(unvisited)
-	            current_head = 1
-	            print "NEW END:"
-	            break ######## why is this here
-	        instructions = getPath(current_pos, current_head, end, 1)
-	        print instructions
-
-	def wander_follow_instr(self, instr_array, position, heading, my_map, unvisited):
-	    my_map = self.detect_walls(position, heading, my_map)
-	    for instr in instr_array:
-	        print instr
-	    	if self.can_follow_instr(instr, position, heading, my_map):
-		        if instr == 'Go Forward':
-		            self.straight(1)
-		        elif instr == 'Turn Left':
-		            self.turnLeft_90()
-		        elif instr == 'Turn Right':
-		            self.turnRight_90()
-		        elif instr == 'Turn Around':
-		            self.turnAround()
-		        heading = self.update_position(instr, position, heading)
-		        my_map = self.detect_walls(position, heading, my_map)
-		        if [position[0], position[1]] in unvisited: ############ does this still work?????????
-		            unvisited.remove([position[0], position[1]])
-            else:
-                return heading
-		return 'great success'
+	        else:
+	            print "unrecognized instruction"
 
 	def can_follow_instr(self, instr, position, heading, my_map):
 		new_heading = self.turn_direction_num(instr, heading)
@@ -346,6 +263,7 @@ class Robot:
 			return False
 	        
 	def update_position(self, instr, position, heading):
+	    new_heading = heading
 	    if instr == 'Go Forward':
 	        if heading == 1:
 	            position[0] -= 1
@@ -358,7 +276,55 @@ class Robot:
 	    else:
 	    	new_heading = self.turn_direction_num(instr, heading)
 	    return new_heading
-	
+	    
+	def explored(self, direction, heading, pos, visited):
+	    #print "explored direction", direction
+	    
+	    #print "other condition", (pos[1]+1 <= 7)
+	    #print "what it sdhould return", visited[pos[0], pos[1]+1]
+	    if direction == 'forward':
+	        if heading == 1 and pos[0] - 1 >= 0:
+	            return visited[pos[0] - 1, pos[1]]
+	        elif heading == 2 and pos[1] + 1 <= 7:
+	            return visited[pos[0], pos[1]+1]
+	        elif heading == 3 and pos[0] + 1 <= 7:
+	            return visited[pos[0] + 1, pos[1]]
+	        elif heading == 4 and pos[1] - 1 >= 0:
+	            return visited[pos[0], pos[1] - 1]
+	    elif direction == 'left':
+	        #print "at least this worked"
+	        #print "explored heading", heading == 3
+	        #print "other condition", (pos[1]+1 <= 7)
+	        if heading == 1 and pos[1]-1 >= 0:
+	            return visited[pos[0], pos[1]-1]
+	        elif heading == 2 and pos[0]-1 >= 0:
+	            return visited[pos[0]-1, pos[1]]
+	        elif heading == 3 and pos[1]+1 <= 7:
+	            #print "this ran"
+	            return visited[pos[0], pos[1]+1]
+            elif heading == 4 and pos[0]+1 <= 7:
+                return visited[pos[0]+1, pos[1]]
+	    elif direction == 'backward':
+	        if heading == 1 and pos[0] + 1 >= 0:
+	            return visited[pos[0] + 1, pos[1]]
+	        elif heading == 2 and pos[1] - 1 <= 7:
+	            return visited[pos[0], pos[1]-1]
+	        elif heading == 3 and pos[0] - 1 <= 7:
+	            return visited[pos[0] - 1, pos[1]]
+	        elif heading == 4 and pos[1] + 1 >= 0:
+	            return visited[pos[0], pos[1] + 1]
+	    elif direction == 'right':
+	        if heading == 1 and pos[1]+1 <= 7:
+	            return visited[pos[0], pos[1]+1]
+	        elif heading == 2 and pos[0]+1 <= 7:
+	            return visited[pos[0]+1, pos[1]]
+	        elif heading == 3 and pos[1]-1 >= 0:
+	            return visited[pos[0], pos[1]-1]
+	        elif heading == 4 and pos[0]-1 >= 0:
+	            return visited[pos[0]-1, pos[1]]
+	    else:
+	        raise Exception('Does not recognize this direction')
+	        
 	def turn_direction_num(self, instr, direction_num):
 		if instr == 'Turn Left':
 		    new_direction = (direction_num - 2) % 4 + 1
@@ -376,6 +342,7 @@ class Robot:
 	    right_value = getSensorValue(self.right_ir_port)
 	    if head_value >= 1000:
 	        rospy.loginfo("front wall detected")
+	        rospy.loginfo(head_value)
 	        my_map.setObstacle(position[0], position[1], 1, heading)
 	    if left_value >= 100:
 	        rospy.loginfo("left wall detected")
@@ -390,8 +357,127 @@ class Robot:
 	   
 	def remove_adjacents(self, instr_array):
 	    grouped_arr = [ (k, sum(1 for i in g)) for k, g in groupby(instr_array) ]
-	    return grouped_arr 
+	    return grouped_arr
+	    
+	def wander3(self, start, start_heading, my_map, visited):
+	    visited[start[0], start[1]] = 1
+	    unvisited = np.where(visited==0)
+	    num_unvisited = len(unvisited[0])
+	    dest_index = random.randint(0,num_unvisited-1)
+	    dest = [ unvisited[0][dest_index], unvisited[1][dest_index] ]
+	    
+	    while np.sum(visited) < 64:
+	        print "We still have to visit ", 64 - np.sum(visited), " squares"
+	        instructions = getPath(start, start_heading, dest, 1, my_map, 1)
+	        print "I'm going to try getting to ", dest
+	        start_heading = self.wander_follow_instr(instructions, start, start_heading, my_map, unvisited)
+	        if start_heading == 'great success':
+	            print "Made it to my destination"
+	            unvisited = np.where(visited==0)
+	            num_unvisited = len(unvisited[0])
+	            if num_unvisited > 0:
+	                dest_index = random.randint(0,num_unvisited-1)
+	                dest = [ unvisited[0][dest_index], unvisited[1][dest_index] ]
+	                start_heading = 1 # sucessful runs always end pointing north
+	                print "Now, I'm going to try getting to " , dest
+	        else:
+	            "Can't make it there using my original plan, let me try a different way"
+	        start_p = raw_input("Type p to start pathfinding...")
+	        if start_p == 'p':
+	            coords = raw_input("Enter the coordinates: [ start_row, start_col, start_heading, end_row, end_col, end_heading ]")
+	            coords = coords.split(" ")
+	            new_instructions = getPath([int(coords[0]), int(coords[1])], int(coords[2]), [int(coords[3]), int(coords[4])], int(coords[5]), my_map, 1)
+	            print new_instructions
+	            self.follow_instructions(new_instructions)
+	            x = raw_input("Press enter to continue exploring")
+	            
+	        
+
+	def wander_follow_instr(self, instr_array, position, heading, my_map, unvisited):
+	    my_map = self.detect_walls(position, heading, my_map)
+	    for instr in instr_array:
+	        print instr
+	        if self.can_follow_instr(instr, position, heading, my_map):
+	            if instr == 'Go Forward':
+	                self.straight(1)
+	            elif instr == 'Turn Left':
+	                self.turnLeft_90()
+	            elif instr == 'Turn Right':
+	                self.turnRight_90()
+	            elif instr == 'Turn Around':
+	                self.turnAround()
+	            heading = self.update_position(instr, position, heading)
+	            my_map = self.detect_walls(position, heading, my_map)
+	            visited[position[0], position[1]] = 1
+	        else:
+	            return heading
+	    return 'great success'
+	        
+	    
+	def wander2(self, start, start_heading):
+	    my_map = onlyExtWalls()
+	    visited = np.zeros((8, 8))
+	    visited[start[0], start[1]] = 1
+	    current_pos = start
+	    current_head = start_heading
+	    
+	    steps = 0
+	    
+	    #print np.sum(visited)
+	    while np.sum(visited) < 32:
+	        my_map = self.detect_walls(current_pos, current_head, my_map)
+	        #print "Forward", self.can_follow_instr('Go Forward', current_pos, current_head, my_map)
+	        #print "Left", self.can_follow_instr('Turn Left', current_pos, current_head, my_map)
+	        #print "exploreddddddd" , self.explored('left', current_head, current_pos, visited)
+	        if self.can_follow_instr('Go Forward', current_pos, current_head, my_map) and self.explored('forward', current_head, current_pos, visited) == 0:
+	            print "Forward is unexplored, going there"
+	            self.straight(1)
+	            current_head = self.update_position('Go Forward', current_pos, current_head)
+	        elif self.can_follow_instr("Turn Left", current_pos, current_head, my_map) and self.explored('left', current_head, current_pos, visited) == 0:
+	            print "Left is unexplored, going there"
+	            self.turnLeft_90()
+	            current_head = self.update_position('Turn Left', current_pos, current_head)
+	        elif self.can_follow_instr("Turn Right", current_pos, current_head, my_map) and self.explored('right', current_head, current_pos, visited) == 0:
+	            print "Right is unexplored, going there"
+	            self.turnRight_90()
+	            current_head = self.update_position('Turn Right', current_pos, current_head)
+	        elif self.can_follow_instr("Turn Around", current_pos, current_head, my_map) and self.explored('backward', current_head, current_pos, visited) == 0:
+	            print "Backward is unexplored, going there"
+	            self.turnAround()
+	            current_head = self.update_position('Turn Around', current_pos, current_head)
+	        elif self.can_follow_instr('Go Forward', current_pos, current_head, my_map):
+	            print "Looks like all adjacecent squares are explored, going forward"
+	            self.straight(1)
+	            current_head = self.update_position('Go Forward', current_pos, current_head)
+	        elif self.can_follow_instr("Turn Left", current_pos, current_head, my_map):
+	            print "Looks like all adjacent squares are explored, going left"
+	            self.turnLeft_90()
+	            current_head = self.update_position('Turn Left', current_pos, current_head)
+	        elif self.can_follow_instr("Turn Right", current_pos, current_head, my_map):
+	            print "Looks like all adjacent squares are explored, going right"
+	            self.turnRight_90()
+	            current_head = self.update_position('Turn Right', current_pos, current_head)
+	        elif self.can_follow_instr("Turn Around", current_pos, current_head, my_map):
+	            print "Looks like all adjacent squares are explored, turning around"
+	            self.turnAround()
+	            current_head = self.update_position('Turn Around', current_pos, current_head)
+	            
+	        visited[current_pos[0], current_pos[1]] = 1
+	        print "Visited array:"
+	        print visited
+	        
+	        steps = steps + 1
+	        if steps % 5 == 0:
+	            start_p = raw_input("Type p to start pathfinding...")
+	            if start_p == 'p':
+	                coords = raw_input("Enter the coordinates: [ start_row, start_col, start_heading, end_row, end_col, end_heading ]")
+	                coords = coords.split(" ")
+	                instructions = getPath([int(coords[0]), int(coords[1])], int(coords[2]), [int(coords[3]), int(coords[4])], int(coords[5]), my_map, 1)
+	                print instructions
+	                self.follow_instructions(instructions)
+	    self.wander3(current_pos, current_head, my_map, visited)
         
+            
 def wait(seconds):
     initial = rospy.Time.now()
     while rospy.Time.now() < initial + rospy.Duration(seconds):
@@ -421,7 +507,24 @@ def onlyExtWalls():
 		# east walls
 		my_map.setObstacle(i,7,1,2)
 	return my_map
-    
+	
+def update_pos(pos, heading):
+    if heading == 1:
+        return [ pos[0]-1, pos[1] ]
+    elif heading == 2:
+        return [ pos[0], pos[1] + 1]
+    elif heading == 3:
+        return [ pos[0] + 1, pos[1] - 1]
+    elif heading == 4:
+        return [ pos[0], pos[1] - 1]
+        
+def change_heading(heading):
+    if heading > 4:
+        heading = heading - 4
+    elif heading < 1:
+        heading = heading + 4
+    return heading
+
 # Main function
 if __name__ == "__main__":
     rospy.init_node('example_node', anonymous=True)
@@ -441,24 +544,28 @@ if __name__ == "__main__":
     Ross = Robot()
 
     args = sys.argv[1:]
-    if not args or len(args) < 6:
-        rospy.loginfo("Usage: rosrun eecs301_grp_c asn2.py start_x start_y start_heading end_x end_y end_heading")
+    if not args or len(args) < 3:
+        rospy.loginfo("Usage: rosrun eecs301_grp_c asn2.py start_x start_y start_heading")
         sys.exit(1)
     #print args
     start = [int(args[0]), int(args[1])]
     start_heading = int(args[2])
-    end = [int(args[3]), int(args[4])]
-    end_heading = int(args[5])
+    #end = [int(args[3]), int(args[4])]
+    #end_heading = int(args[5])
     
-    #Ross.wander([1,1],1)
-    my_map = EECSMap()
-    my_map.clearObstacleMap()
-    my_map.printObstacleMap()
-    print my_map.getNeighborObstacle(0,0,1)
+    my_map = onlyExtWalls()
+    head_threshold = Ross.head_threshold
+    head_sensor = getSensorValue(Ross.head_port)
+    left_sensor = getSensorValue(Ross.left_ir_port)
+    right_sensor = getSensorValue(Ross.right_ir_port)
+    visited = np.zeros((8,8))
+    pos = [0, 0]
+    heading = 3
     
-    #instructions = Ross.remove_adjacents(getPath(start, start_heading, end, end_heading))
-    #Ross.follow_instructions(instructions)
-    
-    # Ross.wander(getPath(start, start_heading, end, end_heading), [2,1,3], map_2)
-    # rospy.loginfo(Ross.remove_adjacents(getPath(start, start_heading, end, end_heading)))
-    
+    if not rospy.is_shutdown():
+        #instructions = getPath(start, start_heading, end, end_heading, EECSMap(), 1)
+        #print instructions
+        #Ross.follow_instructions(instructions)
+        #Ross.wander3(start, start_heading, my_map, np.array([[0,2],[0,3], [2,0]]))
+        # rospy.loginfo(getSensorValue(Ross.left_ir_port))
+        Ross.wander2(start, start_heading)
