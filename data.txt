@@ -1,0 +1,3 @@
+[INFO] [WallTime: 1479253839.420650] Starting Group X Control Node...
+['train', 'data.csv', 'Cube']
+[INFO] [WallTime: 1479253841.370974] Setting wheels to zero
