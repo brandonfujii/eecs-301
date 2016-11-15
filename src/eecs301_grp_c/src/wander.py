@@ -1,13 +1,5 @@
 import numpy as np
 
-head_sensor = getSensorValue(Ross.head_port)
-left_sensor = getSensorValue(Ross.left_ir_port)
-right_sensor = getSensorValue(Ross.right_ir_port)
-visited = np.zeros((8,8))
-pos = [0, 0]
-heading = 3
-visited[pos[0], pos[1]] = 1
-
 def update_pos(pos, heading):
     if heading == 1:
         return [ pos[0]-1, pos[1] ]
@@ -28,6 +20,7 @@ def change_heading(heading):
 
 
 def explored(dir, heading, pos, visited):
+    # gives back either a 1 or a 0
     if dir == 'forward':
         # check if position is possible in that direction
         if heading == 1 and pos[0] - 1 >= 0:
@@ -62,6 +55,13 @@ def explored(dir, heading, pos, visited):
 def main():
 
     my_map = EECSMap()
+    head_sensor = getSensorValue(Ross.head_port)
+    left_sensor = getSensorValue(Ross.left_ir_port)
+    right_sensor = getSensorValue(Ross.right_ir_port)
+    visited = np.zeros((8,8))
+    pos = [0, 0]
+    heading = 3
+    visited[pos[0], pos[1]] = 1
 
     while not rospy.is_shutdown():
         # Front is clear, sides are blocked
