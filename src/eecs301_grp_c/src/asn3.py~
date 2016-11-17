@@ -147,6 +147,12 @@ def shutdown(sig, stackframe):
     
 def appendSensorValue(port, arr):
     arr.append(getSensorValue(port))
+    
+def clean_data(filename):
+    with open(filename, 'rb') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            print row
 
 # Main function
 if __name__ == "__main__":

@@ -147,6 +147,12 @@ def shutdown(sig, stackframe):
     
 def appendSensorValue(port, arr):
     arr.append(getSensorValue(port))
+    
+def clean_data(filename):
+    with open(filename, 'rb') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            print row
 
 # Main function
 if __name__ == "__main__":
@@ -177,7 +183,7 @@ if __name__ == "__main__":
             timeout(320, appendSensorValue, HEAD_PORT, readings)
             setMotorWheelSpeed(13, 0)
             wr.writerow([name] + readings)
-            print "Wrote %d columns to %s" % (len(readings), filename)
+            print "Reading %d: Wrote %d columns to %s" % (x, len(readings), filename)
     except IndexError:
         print "Please enter valid arguments"
     
