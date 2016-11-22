@@ -11,6 +11,7 @@ from itertools import groupby
 import numpy as np
 import csv
 
+
 # -----------SERVICE DEFINITION-----------
 # allcmd REQUEST DATA
 # ---------
@@ -171,19 +172,24 @@ if __name__ == "__main__":
     try:
         mode = args[0]
         filename = args[1]
-        name = ''
         if mode == 'train':
             name = args[2]
-        csv_file = open(filename, 'a')
-        wr = csv.writer(csv_file)
+            csv_file = open(filename, 'a')
+            wr = csv.writer(csv_file)
         
-        for x in range(0, 50):
-            readings = []
-            setMotorWheelSpeed(13, 120)
-            timeout(320, appendSensorValue, HEAD_PORT, readings)
-            setMotorWheelSpeed(13, 0)
-            wr.writerow([name] + readings)
-            print "Reading %d: Wrote %d columns to %s" % (x, len(readings), filename)
+            for x in range(0, 50):
+                readings = []
+                setMotorWheelSpeed(13, 120)
+                timeout(320, appendSensorValue, HEAD_PORT, readings)
+                setMotorWheelSpeed(13, 0)
+                wr.writerow([name] + readings)
+                print "Reading %d: Wrote %d columns to %s" % (x, len(readings), filename)
+        elif mode == 'learn':
+            with open(filename, 'rb') as csvfile:
+                reader = csv.reader(csvfile, delimiter=' ')
+                for row in reader:
+                    print row
+
     except IndexError:
         print "Please enter valid arguments"
     
