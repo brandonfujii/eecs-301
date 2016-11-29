@@ -3,10 +3,13 @@ import roslib
 import signal
 import rospy
 import sys
+import os
+import time
 from fw_wrapper.srv import *
 import operator
 from map import *
 from path import *
+from mltest import *
 from itertools import groupby
 import numpy as np
 import csv
@@ -171,8 +174,9 @@ if __name__ == "__main__":
     print args
     try:
         mode = args[0]
-        filename = args[1]
+        
         if mode == 'train':
+            filename = args[1]
             name = args[2]
             csv_file = open(filename, 'a')
             wr = csv.writer(csv_file)
@@ -183,14 +187,39 @@ if __name__ == "__main__":
                 timeout(320, appendSensorValue, HEAD_PORT, readings)
                 setMotorWheelSpeed(13, 0)
                 wr.writerow([name] + readings)
-                print "Reading %d: Wrote %d columns to %s" % (x, len(readings), filename)
-        elif mode == 'learn':
-            with open(filename, 'rb') as csvfile:
-                reader = csv.reader(csvfile, delimiter=' ')
-                for row in reader:
-                    print row
+                print "Reading %d: Wrote %d columns to %s" % (x + 1, len(readings), filename)
+        elif mode == 'identify':
+            name = args[1]
+            timestamp = str(time.time())
+            writefile = 'data/' + name + '.csv'
+            csv_file = open(writefile, 'a')
+            wr = csv.writer(csv_file)
+            
+            for x in range(0, 50):
+                readings = []
+                setMotorWheelSpeed(13, 120)
+                timeout(320, appendSensorValue, HEAD_PORT, readings)
+                setMotorWheelSpeed(13, 0)
+                wr.writerow([name] + readings)
+                print "Reading %d: Wrote %d columns to %s" % (x + 1, len(readings), writefile)
+            
+            csv_file.close()
+            training_dataset = loadDataset(os.path.join(os.path.dirname(__file__), "../../..", "training_data.csv"))
+            cleanDataAvg(training_dataset,os.path.join(os.path.dirname(__file__), "../../..", "clean_training_data.csv"))
+            discrete_training = discretizeData(training_dataset, os.path.join(os.path.dirname(__file__), "../../..", "discrete_training_data.csv"))
 
-    except IndexError:
+            test_dataset = loadDataset(os.path.join(os.path.dirname(__file__), "../../..", writefile))
+            cleanDataAvg(test_dataset,os.path.join(os.path.dirname(__file__), "../../..", "clean_test_data.csv"))
+            discrete_test = discretizeData(test_dataset, os.path.join(os.path.dirname(__file__), "../../..", "discrete_test_data.csv"))
+
+            cube_dataset = loadDataset(os.path.join(os.path.dirname(__file__), "../../..", 'data/Rubiks.csv'))
+            triangle_dataset = loadDataset(os.path.join(os.path.dirname(__file__), "../../..", 'data/Toblerone.csv'))
+            cylinder_dataset = loadDataset(os.path.join(os.path.dirname(__file__), "../../..", 'data/Starbucks.csv'))
+            
+            evaluateClassification(training_dataset, test_dataset, 50, "Cylinder")
+            
+            # classifyObjects(discrete_training, discrete_test)
+    except ValueError:
         print "Please enter valid arguments"
     
    # while not rospy.is_shutdown():
