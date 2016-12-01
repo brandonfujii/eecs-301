@@ -191,11 +191,11 @@ if __name__ == "__main__":
         elif mode == 'identify':
             name = args[1]
             timestamp = str(time.time())
-            writefile = 'data/' + name + '.csv'
+            writefile = 'tests/test-' + timestamp + '.csv'
             csv_file = open(writefile, 'a')
             wr = csv.writer(csv_file)
             
-            for x in range(0, 50):
+            for x in range(0, 5):
                 readings = []
                 setMotorWheelSpeed(13, 120)
                 timeout(320, appendSensorValue, HEAD_PORT, readings)
@@ -216,10 +216,10 @@ if __name__ == "__main__":
             triangle_dataset = loadDataset(os.path.join(os.path.dirname(__file__), "../../..", 'data/Toblerone.csv'))
             cylinder_dataset = loadDataset(os.path.join(os.path.dirname(__file__), "../../..", 'data/Starbucks.csv'))
             
-            evaluateClassification(training_dataset, test_dataset, 50, "Cylinder")
+            #evaluateClassification(training_dataset, test_dataset, 50, "Cylinder")
             
-            # classifyObjects(discrete_training, discrete_test)
-    except ValueError:
+            classifyObjects(discrete_training, discrete_test)
+    except IndexError:
         print "Please enter valid arguments"
     
    # while not rospy.is_shutdown():
